@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
+	"github.com/GIT_USER_ID/GIT_REPO_ID/k8sclient"
 )
 
 func main() {
@@ -22,7 +23,11 @@ func main() {
 	ApisApiService := openapi.NewApisApiService()
 	ApisApiController := openapi.NewApisApiController(ApisApiService)
 
-	FleetsApiService := openapi.NewFleetsApiService()
+	k8sclient, err := k8sclient.NewK8sClient()
+	if err != nil {
+		panic(err)
+	}
+	FleetsApiService := openapi.NewFleetsApiService(*k8sclient)
 	FleetsApiController := openapi.NewFleetsApiController(FleetsApiService)
 
 	ServicesApiService := openapi.NewServicesApiService()

@@ -11,42 +11,45 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"errors"
+	"strings"
+
+	"github.com/GIT_USER_ID/GIT_REPO_ID/k8sclient"
 )
 
 // FleetsApiService is a service that implements the logic for the FleetsApiServicer
 // This service should implement the business logic for every endpoint for the FleetsApi API.
 // Include any external packages or services that will be required by this service.
 type FleetsApiService struct {
+	K8sClient k8sclient.K8sClient
 }
 
 // NewFleetsApiService creates a default api service
-func NewFleetsApiService() FleetsApiServicer {
-	return &FleetsApiService{}
+func NewFleetsApiService(k8sclient k8sclient.K8sClient) FleetsApiServicer {
+	return &FleetsApiService{
+		K8sClient: k8sclient,
+	}
 }
 
 // GetEnvoyFleet - Get details for a single envoy fleet
 func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	// TODO - update GetEnvoyFleet with the required logic for this service method.
-	// Add api_fleets_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	fleet, err := s.K8sClient.GetEnvoyFleet(namespace, name)
 
-	//TODO: Uncomment the next line to return response Response(200, EnvoyFleetItem{}) or use other options such as http.Ok ...
-	//return Response(200, EnvoyFleetItem{}), nil
-
-	//TODO: Uncomment the next line to return response Response(404, {}) or use other options such as http.Ok ...
-	//return Response(404, nil),nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetEnvoyFleet method not implemented")
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
+			return Response(http.StatusNotFound, err), err
+		}
+		return Response(http.StatusInternalServerError, err), err
+	}
+	return Response(http.StatusOK, fleet), nil
 }
 
 // GetEnvoyFleets - Get a list of envoy fleets
 func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string) (ImplResponse, error) {
-	// TODO - update GetEnvoyFleets with the required logic for this service method.
-	// Add api_fleets_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, []EnvoyFleetItem{}) or use other options such as http.Ok ...
-	//return Response(200, []EnvoyFleetItem{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetEnvoyFleets method not implemented")
+	fleets, err := s.K8sClient.GetEnvoyFleets()
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+	return Response(http.StatusOK, fleets), nil
 }
