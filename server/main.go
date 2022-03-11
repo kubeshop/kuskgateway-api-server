@@ -10,11 +10,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path"
 
+	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -29,7 +31,7 @@ func main() {
 
 	k8sClient, err := getClient()
 	if err != nil {
-		log.Fatalf("unable to get kubernetes client: %w", err)
+		log.Fatalf(fmt.Errorf("unable to get kubernetes client: %w", err).Error())
 	}
 
 	kuskClient := kusk.NewClient(k8sClient)
