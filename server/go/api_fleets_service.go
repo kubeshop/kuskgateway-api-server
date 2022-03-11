@@ -15,26 +15,26 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/GIT_USER_ID/GIT_REPO_ID/k8sclient"
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 )
 
 // FleetsApiService is a service that implements the logic for the FleetsApiServicer
 // This service should implement the business logic for every endpoint for the FleetsApi API.
 // Include any external packages or services that will be required by this service.
 type FleetsApiService struct {
-	K8sClient k8sclient.K8sClient
+	kuskClient kusk.Client
 }
 
 // NewFleetsApiService creates a default api service
-func NewFleetsApiService(k8sclient k8sclient.K8sClient) FleetsApiServicer {
+func NewFleetsApiService(kuskClient kusk.Client) FleetsApiServicer {
 	return &FleetsApiService{
-		K8sClient: k8sclient,
+		kuskClient: kuskClient,
 	}
 }
 
 // GetEnvoyFleet - Get details for a single envoy fleet
 func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	fleet, err := s.K8sClient.GetEnvoyFleet(namespace, name)
+	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
 
 	if err != nil {
 		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
@@ -47,7 +47,7 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 
 // GetEnvoyFleets - Get a list of envoy fleets
 func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string) (ImplResponse, error) {
-	fleets, err := s.K8sClient.GetEnvoyFleets()
+	fleets, err := s.kuskClient.GetEnvoyFleets()
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
