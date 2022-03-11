@@ -12,22 +12,32 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
-	"github.com/GIT_USER_ID/GIT_REPO_ID/k8sclient"
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 )
 
 func main() {
 	log.Printf("Server started")
 
+	k8sClient, err := getClient()
+	if err != nil {
+		log.Fatalf("unable to get kubernetes client: %w", err)
+	}
+
+	kuskClient := kusk.NewClient(k8sClient)
+
 	ApisApiService := openapi.NewApisApiService()
 	ApisApiController := openapi.NewApisApiController(ApisApiService)
 
-	k8sclient, err := k8sclient.NewK8sClient()
-	if err != nil {
-		panic(err)
-	}
-	FleetsApiService := openapi.NewFleetsApiService(*k8sclient)
+	FleetsApiService := openapi.NewFleetsApiService(kuskClient)
 	FleetsApiController := openapi.NewFleetsApiController(FleetsApiService)
 
 	ServicesApiService := openapi.NewServicesApiService()
@@ -36,4 +46,44 @@ func main() {
 	router := openapi.NewRouter(ApisApiController, FleetsApiController, ServicesApiController)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func getConfig() (*rest.Config, error) {
+	var err error
+	var config *rest.Config
+	k8sConfigExists := false
+	homeDir, _ := os.UserHomeDir()
+	cubeConfigPath := path.Join(homeDir, ".kube/config")
+
+	if _, err := os.Stat(cubeConfigPath); err == nil {
+		k8sConfigExists = true
+	}
+
+	if cfg, exists := os.LookupEnv("KUBECONFIG"); exists {
+		config, err = clientcmd.BuildConfigFromFlags("", cfg)
+	} else if k8sConfigExists {
+		config, err = clientcmd.BuildConfigFromFlags("", cubeConfigPath)
+	} else {
+		config, err = rest.InClusterConfig()
+	}
+	if err != nil {
+		return nil, err
+	}
+	// default query per second is set to 5
+	config.QPS = 40.0
+	// default burst is set to 10
+	config.Burst = 400.0
+
+	return config, err
+}
+func getClient() (client.Client, error) {
+	scheme := runtime.NewScheme()
+
+	kuskv1.AddToScheme(scheme)
+	config, err := getConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return client.New(config, client.Options{Scheme: scheme})
 }
