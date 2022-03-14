@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 )
 
 // FleetsApiService is a service that implements the logic for the FleetsApiServicer
@@ -42,7 +43,7 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 		}
 		return Response(http.StatusInternalServerError, err), err
 	}
-	return Response(http.StatusOK, fleet), nil
+	return Response(http.StatusOK, convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
 }
 
 // GetEnvoyFleets - Get a list of envoy fleets
@@ -51,5 +52,20 @@ func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-	return Response(http.StatusOK, fleets), nil
+	return Response(http.StatusOK, convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets)), nil
+}
+
+func convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets *v1alpha1.EnvoyFleetList) []EnvoyFleetItem {
+	toReturn := make([]EnvoyFleetItem, len(fleets.Items))
+	for _, fleet := range fleets.Items {
+		toReturn = append(toReturn, convertEnvoyFleetCRDtoEnvoyFleetModel(&fleet))
+	}
+	return toReturn
+}
+
+func convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1.EnvoyFleet) EnvoyFleetItem {
+	return EnvoyFleetItem{
+		Name:      fleet.Name,
+		Namespace: fleet.Namespace,
+	}
 }
