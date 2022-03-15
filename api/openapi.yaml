@@ -40,7 +40,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiItem"
-  /apis/{apiId}/rawOpenApiSpec:
+  /apis/{namespace}/{name}/rawOpenApiSpec:
     get:
       tags:
         - "apis"
@@ -48,7 +48,13 @@ paths:
       description: "Returns the raw OpenAPI specification"
       operationId: getRawOpenApiSpec
       parameters:
-        - name: apiId
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: name
           in: path
           required: true
           schema:
@@ -63,7 +69,7 @@ paths:
                 type: object
         404:
           description: "Raw OpenAPI spec not found"
-  /apis/{apiId}/postProcessedOpenApiSpec:
+  /apis/{namespace}/{name}/postProcessedOpenApiSpec:
     get:
       tags:
         - "apis"
@@ -71,12 +77,16 @@ paths:
       description: "Returns the post-processed OpenAPI specification"
       operationId: getPostProcessedOpenApiSpec
       parameters:
-        - name: apiId
+        - name: namespace
           in: path
           required: true
           schema:
             type: string
-            format: uuid
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: "Post-processed OpenAPI spec object"
