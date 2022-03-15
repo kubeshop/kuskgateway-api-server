@@ -12,6 +12,7 @@ package openapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
@@ -26,12 +27,13 @@ type ApisApiService struct {
 }
 
 // NewApisApiService creates a default api service
-func NewApisApiService() ApisApiServicer {
-	return &ApisApiService{}
+func NewApisApiService(kuskClient kusk.Client) ApisApiServicer {
+	return &ApisApiService{kuskClient: kuskClient}
 }
 
 // GetApis - Get a list of APIs
 func (s *ApisApiService) GetApis(ctx context.Context, fleet string) (ImplResponse, error) {
+	fmt.Println("s", s)
 	apis, err := s.kuskClient.GetApis()
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
@@ -56,6 +58,7 @@ func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, apiId 
 
 // GetRawOpenApiSpec - Get the raw OpenAPI spec by API id
 func (s *ApisApiService) GetRawOpenApiSpec(ctx context.Context, apiId string) (ImplResponse, error) {
+
 	// TODO - update GetRawOpenApiSpec with the required logic for this service method.
 	// Add api_apis_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 

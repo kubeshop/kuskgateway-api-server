@@ -36,7 +36,8 @@ func main() {
 
 	kuskClient := kusk.NewClient(k8sClient)
 
-	ApisApiService := openapi.NewApisApiService()
+	ApisApiService := openapi.NewApisApiService(kuskClient)
+	fmt.Println("ApisApiService", ApisApiService)
 	ApisApiController := openapi.NewApisApiController(ApisApiService)
 
 	FleetsApiService := openapi.NewFleetsApiService(kuskClient)
@@ -80,7 +81,7 @@ func getConfig() (*rest.Config, error) {
 }
 func getClient() (client.Client, error) {
 	scheme := runtime.NewScheme()
-
+	fmt.Println(scheme)
 	kuskv1.AddToScheme(scheme)
 	config, err := getConfig()
 	if err != nil {
