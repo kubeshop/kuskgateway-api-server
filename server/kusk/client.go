@@ -64,3 +64,19 @@ func (k *kuskClient) GetApi(namespace, name string) (*kuskv1.API, error) {
 	}
 	return api, nil
 }
+
+// GetApiByFleet gets all APIs associated with the EnvoyFleet
+func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kuskv1.API, error) {
+	list := kuskv1.APIList{}
+	if err := k.client.List(context.TODO(), &list, &client.ListOptions{}); err != nil {
+		return nil, err
+	}
+
+	toReturn := []kuskv1.API{}
+	for _, api := range list.Items {
+		if api.Spec.Fleet.Name == fleetName && api.Spec.Fleet.Namespace == fleetNamespace {
+			toReturn = append(toReturn, api)
+		}
+	}
+	return toReturn, nil
+}

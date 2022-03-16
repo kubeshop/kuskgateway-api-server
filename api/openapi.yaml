@@ -265,11 +265,10 @@ components:
       properties:
         name:
           type: string
-        id:
-          type: string
-          format: uuid
         namespace:
           type: string
+        apis:
+          $ref: "#/components/schemas/ApiItem_Fleet"
     ApiItem_Fleet:
       type: object
       required:

@@ -12,7 +12,6 @@ package openapi
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
@@ -33,7 +32,6 @@ func NewApisApiService(kuskClient kusk.Client) ApisApiServicer {
 
 // GetApis - Get a list of APIs
 func (s *ApisApiService) GetApis(ctx context.Context, fleet string) (ImplResponse, error) {
-	fmt.Println("s", s)
 	apis, err := s.kuskClient.GetApis()
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
