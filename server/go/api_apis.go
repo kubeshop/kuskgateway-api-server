@@ -50,6 +50,12 @@ func NewApisApiController(s ApisApiServicer, opts ...ApisApiOption) Router {
 func (c *ApisApiController) Routes() Routes {
 	return Routes{
 		{
+			"GetApi",
+			strings.ToUpper("Get"),
+			"/apis/{namespace}/{name}",
+			c.GetApi,
+		},
+		{
 			"GetApis",
 			strings.ToUpper("Get"),
 			"/apis",
@@ -58,16 +64,34 @@ func (c *ApisApiController) Routes() Routes {
 		{
 			"GetPostProcessedOpenApiSpec",
 			strings.ToUpper("Get"),
-			"/apis/{apiId}/postProcessedOpenApiSpec",
+			"/apis/{namespace}/{name}/postProcessedOpenApiSpec",
 			c.GetPostProcessedOpenApiSpec,
 		},
 		{
 			"GetRawOpenApiSpec",
 			strings.ToUpper("Get"),
-			"/apis/{apiId}/rawOpenApiSpec",
+			"/apis/{namespace}/{name}/rawOpenApiSpec",
 			c.GetRawOpenApiSpec,
 		},
 	}
+}
+
+// GetApi - Get an API instance by namespace and name
+func (c *ApisApiController) GetApi(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	result, err := c.service.GetApi(r.Context(), namespaceParam, nameParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
 }
 
 // GetApis - Get a list of APIs
@@ -88,9 +112,11 @@ func (c *ApisApiController) GetApis(w http.ResponseWriter, r *http.Request) {
 // GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
 func (c *ApisApiController) GetPostProcessedOpenApiSpec(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	apiIdParam := params["apiId"]
+	namespaceParam := params["namespace"]
 
-	result, err := c.service.GetPostProcessedOpenApiSpec(r.Context(), apiIdParam)
+	nameParam := params["name"]
+
+	result, err := c.service.GetPostProcessedOpenApiSpec(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -104,9 +130,11 @@ func (c *ApisApiController) GetPostProcessedOpenApiSpec(w http.ResponseWriter, r
 // GetRawOpenApiSpec - Get the raw OpenAPI spec by API id
 func (c *ApisApiController) GetRawOpenApiSpec(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	apiIdParam := params["apiId"]
+	namespaceParam := params["namespace"]
 
-	result, err := c.service.GetRawOpenApiSpec(r.Context(), apiIdParam)
+	nameParam := params["name"]
+
+	result, err := c.service.GetRawOpenApiSpec(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

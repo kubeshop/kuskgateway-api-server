@@ -13,16 +13,15 @@ type EnvoyFleetItem struct {
 
 	Name string `json:"name"`
 
-	Id string `json:"id"`
-
 	Namespace string `json:"namespace"`
+
+	Apis []ApiItemFleet `json:"apis,omitempty"`
 }
 
 // AssertEnvoyFleetItemRequired checks if the required fields are not zero-ed
 func AssertEnvoyFleetItemRequired(obj EnvoyFleetItem) error {
 	elements := map[string]interface{}{
 		"name": obj.Name,
-		"id": obj.Id,
 		"namespace": obj.Namespace,
 	}
 	for name, el := range elements {
@@ -31,6 +30,11 @@ func AssertEnvoyFleetItemRequired(obj EnvoyFleetItem) error {
 		}
 	}
 
+	for _, el := range obj.Apis {
+		if err := AssertApiItemFleetRequired(el); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

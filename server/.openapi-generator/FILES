@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 Dockerfile
 README.md
 api/openapi.yaml
@@ -7,7 +6,6 @@ go/api.go
 go/api_apis.go
 go/api_apis_service.go
 go/api_fleets.go
-go/api_fleets_service.go
 go/api_services.go
 go/api_services_service.go
 go/error.go

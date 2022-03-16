@@ -58,6 +58,15 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: "API item"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiItem"
+        404:
+          description: "API item not found"
   /apis/{namespace}/{name}/rawOpenApiSpec:
     get:
       tags:
@@ -268,7 +277,9 @@ components:
         namespace:
           type: string
         apis:
-          $ref: "#/components/schemas/ApiItem_Fleet"
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiItem_Fleet"
     ApiItem_Fleet:
       type: object
       required:

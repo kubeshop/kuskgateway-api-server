@@ -13,6 +13,7 @@ type Client interface {
 
 	GetApis() (kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
+	GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kuskv1.API, error)
 }
 
 type kuskClient struct {
