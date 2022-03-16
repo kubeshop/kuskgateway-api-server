@@ -11,6 +11,7 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
@@ -47,7 +48,7 @@ func (s *ApisApiService) GetRawOpenApiSpec(ctx context.Context, namespace string
 }
 
 func convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
-	toReturn := make([]ApiItem, len(apis.Items))
+	toReturn := []ApiItem{}
 	for _, api := range apis.Items {
 		toReturn = append(toReturn, convertAPICRDtoAPIModel(&api))
 	}
@@ -55,6 +56,7 @@ func convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
 }
 
 func convertAPICRDtoAPIModel(api *v1alpha1.API) ApiItem {
+	fmt.Println("api.Name", api.Name)
 	return ApiItem{
 		Name: api.Name,
 	}

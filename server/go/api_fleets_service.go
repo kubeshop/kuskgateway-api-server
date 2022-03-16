@@ -56,7 +56,7 @@ func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string)
 }
 
 func (s *FleetsApiService) convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets *v1alpha1.EnvoyFleetList) []EnvoyFleetItem {
-	toReturn := make([]EnvoyFleetItem, len(fleets.Items))
+	toReturn := []EnvoyFleetItem{}
 	for _, fleet := range fleets.Items {
 		toReturn = append(toReturn, s.convertEnvoyFleetCRDtoEnvoyFleetModel(&fleet))
 	}
