@@ -47,7 +47,7 @@ type ServicesApiRouter interface {
 // and updated with the logic required for the API.
 type ApisApiServicer interface { 
 	GetApi(context.Context, string, string) (ImplResponse, error)
-	GetApis(context.Context, string) (ImplResponse, error)
+	GetApis(context.Context, string, string) (ImplResponse, error)
 	GetPostProcessedOpenApiSpec(context.Context, string, string) (ImplResponse, error)
 	GetRawOpenApiSpec(context.Context, string, string) (ImplResponse, error)
 }

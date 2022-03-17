@@ -15,17 +15,28 @@ import (
 	"strings"
 
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
 )
 
 // GetApis - Get a list of APIs
-func (s *ApisApiService) GetApis(ctx context.Context, fleet string) (ImplResponse, error) {
-	apis, err := s.kuskClient.GetApis()
-	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
-	}
+func (s *ApisApiService) GetApis(ctx context.Context, fleetname string, fleetnamespace string) (ImplResponse, error) {
+	apis := &kuskv1.APIList{}
+	var err error
+	if fleetname == "" {
+		apis, err = s.kuskClient.GetApis()
+		if err != nil {
+			return Response(http.StatusInternalServerError, err), err
+		}
 
-	return Response(http.StatusOK, s.convertAPIListCRDtoAPIsModel(apis)), nil
+	} else {
+		apis, err = s.kuskClient.GetApiByEnvoyFleet(fleetnamespace, fleetname)
+		if err != nil {
+			return Response(http.StatusInternalServerError, err), err
+		}
+	}
+	return Response(http.StatusOK, s.convertAPIListCRDtoAPIsModel(*apis)), nil
+
 }
 
 // GetApi - Get an API instance by namespace and name
@@ -57,6 +68,7 @@ func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namesp
 	parser := spec.NewParser(nil)
 
 	apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
+
 	if err != nil {
 		return Response(http.StatusInternalServerError, nil), err
 	}

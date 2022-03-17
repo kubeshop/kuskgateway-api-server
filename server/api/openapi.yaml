@@ -25,7 +25,15 @@ paths:
       - description: optional filter on fleet
         explode: true
         in: query
-        name: fleet
+        name: fleetname
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: optional filter on fleet
+        explode: true
+        in: query
+        name: fleetnamespace
         required: false
         schema:
           type: string

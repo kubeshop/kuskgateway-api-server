@@ -25,7 +25,13 @@ paths:
       description: "Returns the list of APIs available in the cluster"
       operationId: getApis
       parameters:
-        - name: fleet
+        - name: fleetname
+          in: query
+          schema:
+            type: string
+          required: false
+          description: optional filter on fleet
+        - name: fleetnamespace
           in: query
           schema:
             type: string
