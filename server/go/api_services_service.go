@@ -11,42 +11,78 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"errors"
+	"strings"
+
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/kubeshop/kusk-gateway/pkg/spec"
 )
 
 // ServicesApiService is a service that implements the logic for the ServicesApiServicer
 // This service should implement the business logic for every endpoint for the ServicesApi API.
 // Include any external packages or services that will be required by this service.
 type ServicesApiService struct {
+	kuskClient kusk.Client
 }
 
 // NewServicesApiService creates a default api service
-func NewServicesApiService() ServicesApiServicer {
-	return &ServicesApiService{}
+func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
+	return &ServicesApiService{
+		kuskClient: kuskClient,
+	}
 }
 
 // GetService - Get details for a single service
 func (s *ServicesApiService) GetService(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	// TODO - update GetService with the required logic for this service method.
-	// Add api_services_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	_, err := s.kuskClient.GetSvc(namespace, name)
+	status := "available"
+	if err != nil {
+		if !(err.Error() == fmt.Sprintf(`services "%s" not found`, name)) {
+			return Response(http.StatusInternalServerError, err), err
+		}
+		status = "unavailable"
+	}
 
-	//TODO: Uncomment the next line to return response Response(200, ServiceItem{}) or use other options such as http.Ok ...
-	//return Response(200, ServiceItem{}), nil
-
-	//TODO: Uncomment the next line to return response Response(404, {}) or use other options such as http.Ok ...
-	//return Response(404, nil),nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetService method not implemented")
+	return Response(http.StatusOK, ServiceItem{
+		Name:      name,
+		Namespace: namespace,
+		Status:    status,
+	}), nil
 }
 
 // GetServices - Get a list of services
 func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
-	// TODO - update GetServices with the required logic for this service method.
-	// Add api_services_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	apis, err := s.kuskClient.GetApis()
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
 
-	//TODO: Uncomment the next line to return response Response(200, []ServiceItem{}) or use other options such as http.Ok ...
-	//return Response(200, []ServiceItem{}), nil
+	services := []ServiceItem{}
+	parser := spec.NewParser(nil)
 
-	return Response(http.StatusNotImplemented, nil), errors.New("GetServices method not implemented")
+	for _, api := range apis.Items {
+		apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
+		if err != nil {
+			return Response(http.StatusInternalServerError, nil), err
+		}
+
+		opts, err := spec.GetOptions(apiSpec)
+		if err != nil {
+			return Response(http.StatusInternalServerError, nil), err
+		}
+
+		serviceStatus := "available"
+		if _, err := s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name); err != nil {
+			serviceStatus = "unavailable"
+
+		}
+		services = append(services, ServiceItem{
+			Name:      opts.Upstream.Service.Name,
+			Namespace: opts.Upstream.Service.Namespace,
+			Status:    serviceStatus,
+		})
+
+	}
+	return Response(http.StatusOK, services), nil
 }

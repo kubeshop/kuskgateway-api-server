@@ -13,8 +13,6 @@ type ServiceItem struct {
 
 	Name string `json:"name"`
 
-	Id string `json:"id"`
-
 	Status string `json:"status"`
 
 	Namespace string `json:"namespace"`
@@ -24,7 +22,6 @@ type ServiceItem struct {
 func AssertServiceItemRequired(obj ServiceItem) error {
 	elements := map[string]interface{}{
 		"name": obj.Name,
-		"id": obj.Id,
 		"status": obj.Status,
 		"namespace": obj.Namespace,
 	}

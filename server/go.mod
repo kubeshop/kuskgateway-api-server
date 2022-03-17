@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/kubeshop/kusk-gateway v0.0.0-alpha.2.1.4.0.20220311152220-c961baf71aef
+	github.com/kubeshop/kusk-gateway v0.0.0-alpha.2.1.4.0.20220316121026-aef038baad91
 	k8s.io/apimachinery v0.23.4
 	k8s.io/client-go v0.23.4
 	sigs.k8s.io/controller-runtime v0.11.1

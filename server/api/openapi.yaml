@@ -264,12 +264,11 @@ components:
           name: name
           namespace: namespace
         name: name
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        namespace: namespace
       properties:
         name:
           type: string
-        id:
-          format: uuid
+        namespace:
           type: string
         fleet:
           $ref: '#/components/schemas/ApiItem_Fleet'
@@ -277,7 +276,6 @@ components:
           $ref: '#/components/schemas/ApiItem_Service'
       required:
       - fleet
-      - id
       - name
       - service
       - status
@@ -286,13 +284,9 @@ components:
       example:
         name: name
         namespace: namespace
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         status: available
       properties:
         name:
-          type: string
-        id:
-          format: uuid
           type: string
         status:
           enum:
@@ -302,7 +296,6 @@ components:
         namespace:
           type: string
       required:
-      - id
       - name
       - namespace
       - status
@@ -326,7 +319,6 @@ components:
             $ref: '#/components/schemas/ApiItem_Fleet'
           type: array
       required:
-      - id
       - name
       - namespace
       type: object

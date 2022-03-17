@@ -4,6 +4,7 @@ import (
 	"context"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -14,6 +15,8 @@ type Client interface {
 	GetApis() (kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kuskv1.API, error)
+
+	GetSvc(namespace, name string) (*corev1.Service, error)
 }
 
 type kuskClient struct {
@@ -80,4 +83,13 @@ func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kus
 		}
 	}
 	return toReturn, nil
+}
+
+func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
+	svc := &corev1.Service{}
+	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, svc); err != nil {
+		return nil, err
+	}
+
+	return svc, nil
 }

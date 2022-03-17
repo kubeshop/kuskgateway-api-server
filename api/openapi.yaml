@@ -231,16 +231,14 @@ components:
       type: object
       required:
         - name
-        - id
         - status
         - fleet
         - service
       properties:
         name:
           type: string
-        id:
+        namespace:
           type: string
-          format: uuid
         fleet:
           $ref: "#/components/schemas/ApiItem_Fleet"
         service:
@@ -249,15 +247,11 @@ components:
       type: object
       required:
         - name
-        - id
         - status
         - namespace
       properties:
         name:
           type: string
-        id:
-          type: string
-          format: uuid
         status:
           type: string
           enum:
@@ -269,7 +263,6 @@ components:
       type: object
       required:
         - name
-        - id
         - namespace
       properties:
         name:
