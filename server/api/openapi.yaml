@@ -278,7 +278,6 @@ components:
         - fleet
         - name
         - service
-        - status
         - namespace
       type: object
     ServiceItem:
