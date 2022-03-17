@@ -273,6 +273,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ApiItem_Fleet"
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceItem"
     ApiItem_Fleet:
       type: object
       required:
