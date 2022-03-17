@@ -11,7 +11,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -79,8 +78,8 @@ func convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
 }
 
 func convertAPICRDtoAPIModel(api *v1alpha1.API) ApiItem {
-	fmt.Println("api.Name", api.Name)
 	return ApiItem{
-		Name: api.Name,
+		Name:      api.Name,
+		Namespace: api.Namespace,
 	}
 }
