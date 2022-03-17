@@ -7,92 +7,92 @@ externalDocs:
   description: Find out more about Kusk-Gateway
   url: https://kubeshop.github.io/kusk-gateway/
 servers:
-- description: My local endpoint mockup
-  url: http://localhost:4010
+  - description: My local endpoint mockup
+    url: http://localhost:4010
 tags:
-- description: Get the list of the APIs
-  name: apis
-- description: Get the list of all services
-  name: services
-- description: Get the list of all envoy fleets
-  name: fleets
+  - description: Get the list of the APIs
+    name: apis
+  - description: Get the list of all services
+    name: services
+  - description: Get the list of all envoy fleets
+    name: fleets
 paths:
   /apis:
     get:
       description: Returns the list of APIs available in the cluster
       operationId: getApis
       parameters:
-      - description: optional filter on fleet
-        explode: true
-        in: query
-        name: fleet
-        required: false
-        schema:
-          type: string
-        style: form
+        - description: optional filter on fleet
+          explode: true
+          in: query
+          name: fleet
+          required: false
+          schema:
+            type: string
+          style: form
       responses:
         "200":
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/ApiItem'
+                  $ref: "#/components/schemas/ApiItem"
                 type: array
           description: a list of apis
       summary: Get a list of APIs
       tags:
-      - apis
+        - apis
   /apis/{namespace}/{name}":
     get:
       operationId: getApi
       parameters:
-      - explode: false
-        in: path
-        name: namespace
-        required: true
-        schema:
-          default: default
-          type: string
-        style: simple
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - explode: false
+          in: path
+          name: namespace
+          required: true
+          schema:
+            default: default
+            type: string
+          style: simple
+        - explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiItem'
+                $ref: "#/components/schemas/ApiItem"
           description: API item
         "404":
           description: API item not found
       summary: Get an API instance by namespace and name
       tags:
-      - apis
+        - apis
   /apis/{namespace}/{name}/rawOpenApiSpec:
     get:
       description: Returns the raw OpenAPI specification
       operationId: getRawOpenApiSpec
       parameters:
-      - explode: false
-        in: path
-        name: namespace
-        required: true
-        schema:
-          default: default
-          type: string
-        style: simple
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - explode: false
+          in: path
+          name: namespace
+          required: true
+          schema:
+            default: default
+            type: string
+          style: simple
+        - explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
         "200":
           content:
@@ -104,27 +104,27 @@ paths:
           description: Raw OpenAPI spec not found
       summary: Get the raw OpenAPI spec by API id
       tags:
-      - apis
+        - apis
   /apis/{namespace}/{name}/postProcessedOpenApiSpec:
     get:
       description: Returns the post-processed OpenAPI specification
       operationId: getPostProcessedOpenApiSpec
       parameters:
-      - explode: false
-        in: path
-        name: namespace
-        required: true
-        schema:
-          default: default
-          type: string
-        style: simple
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - explode: false
+          in: path
+          name: namespace
+          required: true
+          schema:
+            default: default
+            type: string
+          style: simple
+        - explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
         "200":
           content:
@@ -136,123 +136,123 @@ paths:
           description: Post-processed OpenAPI spec not found
       summary: Get the post-processed OpenAPI spec by API id
       tags:
-      - apis
+        - apis
   /services:
     get:
       description: Returns the list of services available in the cluster
       operationId: getServices
       parameters:
-      - description: optional filter on namespace
-        explode: true
-        in: query
-        name: namespace
-        required: false
-        schema:
-          type: string
-        style: form
+        - description: optional filter on namespace
+          explode: true
+          in: query
+          name: namespace
+          required: false
+          schema:
+            type: string
+          style: form
       responses:
         "200":
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/ServiceItem'
+                  $ref: "#/components/schemas/ServiceItem"
                 type: array
           description: list of services
       summary: Get a list of services
       tags:
-      - services
+        - services
   /services/{namespace}/{name}:
     get:
       description: Returns an object containing info about the service corresponding
         to the namespace and name
       operationId: getService
       parameters:
-      - explode: false
-        in: path
-        name: namespace
-        required: true
-        schema:
-          type: string
-        style: simple
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - explode: false
+          in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+          style: simple
+        - explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceItem'
+                $ref: "#/components/schemas/ServiceItem"
           description: service details
         "404":
           description: Service not found by namespace-name combination
       summary: Get details for a single service
       tags:
-      - services
+        - services
   /fleets:
     get:
       description: Returns a list of envoy fleets that are available in the cluster
       operationId: getEnvoyFleets
       parameters:
-      - description: optional filter on namespace
-        explode: true
-        in: query
-        name: namespace
-        required: false
-        schema:
-          type: string
-        style: form
+        - description: optional filter on namespace
+          explode: true
+          in: query
+          name: namespace
+          required: false
+          schema:
+            type: string
+          style: form
       responses:
         "200":
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/EnvoyFleetItem'
+                  $ref: "#/components/schemas/EnvoyFleetItem"
                 type: array
           description: list of envoy fleets
       summary: Get a list of envoy fleets
       tags:
-      - fleets
+        - fleets
   /fleets/{namespace}/{name}:
     get:
       description: Returns an object containing info about the envoy fleet corresponding
         to the namespace and name
       operationId: getEnvoyFleet
       parameters:
-      - description: the namespace of the fleet
-        explode: false
-        in: path
-        name: namespace
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: the name of the fleet
-        explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: the namespace of the fleet
+          explode: false
+          in: path
+          name: namespace
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: the name of the fleet
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EnvoyFleetItem'
+                $ref: "#/components/schemas/EnvoyFleetItem"
           description: envoy fleet details
         "404":
           description: Envoy fleet not found by namespace-name combination
       summary: Get details for a single envoy fleet
       tags:
-      - fleets
+        - fleets
 components:
   schemas:
     ApiItem:
@@ -264,23 +264,27 @@ components:
           name: name
           namespace: namespace
         name: name
+        namespace: namespace
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         name:
+          type: string
+        namespace:
           type: string
         id:
           format: uuid
           type: string
         fleet:
-          $ref: '#/components/schemas/ApiItem_Fleet'
+          $ref: "#/components/schemas/ApiItem_Fleet"
         service:
-          $ref: '#/components/schemas/ApiItem_Service'
+          $ref: "#/components/schemas/ApiItem_Service"
       required:
-      - fleet
-      - id
-      - name
-      - service
-      - status
+        - fleet
+        - id
+        - name
+        - service
+        - status
+        - namespace
       type: object
     ServiceItem:
       example:
@@ -296,24 +300,24 @@ components:
           type: string
         status:
           enum:
-          - available
-          - unavailable
+            - available
+            - unavailable
           type: string
         namespace:
           type: string
       required:
-      - id
-      - name
-      - namespace
-      - status
+        - id
+        - name
+        - namespace
+        - status
       type: object
     EnvoyFleetItem:
       example:
         apis:
-        - name: name
-          namespace: namespace
-        - name: name
-          namespace: namespace
+          - name: name
+            namespace: namespace
+          - name: name
+            namespace: namespace
         name: name
         namespace: namespace
       properties:
@@ -323,12 +327,12 @@ components:
           type: string
         apis:
           items:
-            $ref: '#/components/schemas/ApiItem_Fleet'
+            $ref: "#/components/schemas/ApiItem_Fleet"
           type: array
       required:
-      - id
-      - name
-      - namespace
+        - id
+        - name
+        - namespace
       type: object
     ApiItem_Fleet:
       example:
@@ -340,8 +344,8 @@ components:
         namespace:
           type: string
       required:
-      - name
-      - namespace
+        - name
+        - namespace
       type: object
     ApiItem_Service:
       example:
@@ -353,6 +357,6 @@ components:
         namespace:
           type: string
       required:
-      - name
-      - namespace
+        - name
+        - namespace
       type: object
