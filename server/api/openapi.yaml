@@ -42,17 +42,55 @@ paths:
       summary: Get a list of APIs
       tags:
       - apis
-  /apis/{apiId}/rawOpenApiSpec:
+  /apis/{namespace}/{name}":
+    get:
+      operationId: getApi
+      parameters:
+      - explode: false
+        in: path
+        name: namespace
+        required: true
+        schema:
+          default: default
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiItem'
+          description: API item
+        "404":
+          description: API item not found
+      summary: Get an API instance by namespace and name
+      tags:
+      - apis
+  /apis/{namespace}/{name}/rawOpenApiSpec:
     get:
       description: Returns the raw OpenAPI specification
       operationId: getRawOpenApiSpec
       parameters:
       - explode: false
         in: path
-        name: apiId
+        name: namespace
         required: true
         schema:
-          format: uuid
+          default: default
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
           type: string
         style: simple
       responses:
@@ -67,17 +105,24 @@ paths:
       summary: Get the raw OpenAPI spec by API id
       tags:
       - apis
-  /apis/{apiId}/postProcessedOpenApiSpec:
+  /apis/{namespace}/{name}/postProcessedOpenApiSpec:
     get:
       description: Returns the post-processed OpenAPI specification
       operationId: getPostProcessedOpenApiSpec
       parameters:
       - explode: false
         in: path
-        name: apiId
+        name: namespace
         required: true
         schema:
-          format: uuid
+          default: default
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
           type: string
         style: simple
       responses:
@@ -264,17 +309,22 @@ components:
       type: object
     EnvoyFleetItem:
       example:
+        apis:
+        - name: name
+          namespace: namespace
+        - name: name
+          namespace: namespace
         name: name
         namespace: namespace
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         name:
           type: string
-        id:
-          format: uuid
-          type: string
         namespace:
           type: string
+        apis:
+          items:
+            $ref: '#/components/schemas/ApiItem_Fleet'
+          type: array
       required:
       - id
       - name

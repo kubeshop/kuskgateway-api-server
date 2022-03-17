@@ -40,7 +40,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiItem"
-  /apis/{apiId}/rawOpenApiSpec:
+  /apis/{namespace}/{name}":
+    get:
+      tags:
+        - "apis"
+      summary: "Get an API instance by namespace and name"
+      operationId: getApi
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "API item"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiItem"
+        404:
+          description: "API item not found"
+  /apis/{namespace}/{name}/rawOpenApiSpec:
     get:
       tags:
         - "apis"
@@ -48,12 +75,17 @@ paths:
       description: "Returns the raw OpenAPI specification"
       operationId: getRawOpenApiSpec
       parameters:
-        - name: apiId
+        - name: namespace
           in: path
           required: true
           schema:
             type: string
-            format: uuid
+            default: default
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: "Raw OpenAPI spec object"
@@ -63,7 +95,7 @@ paths:
                 type: object
         404:
           description: "Raw OpenAPI spec not found"
-  /apis/{apiId}/postProcessedOpenApiSpec:
+  /apis/{namespace}/{name}/postProcessedOpenApiSpec:
     get:
       tags:
         - "apis"
@@ -71,12 +103,17 @@ paths:
       description: "Returns the post-processed OpenAPI specification"
       operationId: getPostProcessedOpenApiSpec
       parameters:
-        - name: apiId
+        - name: namespace
           in: path
           required: true
           schema:
             type: string
-            format: uuid
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: "Post-processed OpenAPI spec object"
@@ -237,11 +274,12 @@ components:
       properties:
         name:
           type: string
-        id:
-          type: string
-          format: uuid
         namespace:
           type: string
+        apis:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiItem_Fleet"
     ApiItem_Fleet:
       type: object
       required:

@@ -43,7 +43,7 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 		}
 		return Response(http.StatusInternalServerError, err), err
 	}
-	return Response(http.StatusOK, convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
+	return Response(http.StatusOK, s.convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
 }
 
 // GetEnvoyFleets - Get a list of envoy fleets
@@ -52,20 +52,31 @@ func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-	return Response(http.StatusOK, convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets)), nil
+	return Response(http.StatusOK, s.convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets)), nil
 }
 
-func convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets *v1alpha1.EnvoyFleetList) []EnvoyFleetItem {
-	toReturn := make([]EnvoyFleetItem, len(fleets.Items))
+func (s *FleetsApiService) convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets *v1alpha1.EnvoyFleetList) []EnvoyFleetItem {
+	toReturn := []EnvoyFleetItem{}
 	for _, fleet := range fleets.Items {
-		toReturn = append(toReturn, convertEnvoyFleetCRDtoEnvoyFleetModel(&fleet))
+		toReturn = append(toReturn, s.convertEnvoyFleetCRDtoEnvoyFleetModel(&fleet))
 	}
 	return toReturn
 }
 
-func convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1.EnvoyFleet) EnvoyFleetItem {
+func (s *FleetsApiService) convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1.EnvoyFleet) EnvoyFleetItem {
+	apifs := []ApiItemFleet{}
+	apis, err := s.kuskClient.GetApiByEnvoyFleet(fleet.Namespace, fleet.Name)
+	if err == nil {
+		for _, api := range apis {
+			apifs = append(apifs, ApiItemFleet{
+				Name:      api.Name,
+				Namespace: api.Namespace,
+			})
+		}
+	}
 	return EnvoyFleetItem{
 		Name:      fleet.Name,
 		Namespace: fleet.Namespace,
+		Apis:      apifs,
 	}
 }

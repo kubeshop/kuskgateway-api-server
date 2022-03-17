@@ -10,12 +10,11 @@
 package openapi
 
 type ApiItem struct {
-
 	Name string `json:"name"`
 
 	Id string `json:"id"`
 
-	Fleet ApiItemFleet `json:"fleet"`
+	// Fleet ApiItemFleet `json:"fleet"`
 
 	Service ApiItemService `json:"service"`
 }
@@ -24,8 +23,8 @@ type ApiItem struct {
 func AssertApiItemRequired(obj ApiItem) error {
 	elements := map[string]interface{}{
 		"name": obj.Name,
-		"id": obj.Id,
-		"fleet": obj.Fleet,
+		"id":   obj.Id,
+		// "fleet":   obj.Fleet,
 		"service": obj.Service,
 	}
 	for name, el := range elements {
@@ -34,9 +33,9 @@ func AssertApiItemRequired(obj ApiItem) error {
 		}
 	}
 
-	if err := AssertApiItemFleetRequired(obj.Fleet); err != nil {
-		return err
-	}
+	// if err := AssertApiItemFleetRequired(obj.Fleet); err != nil {
+	// 	return err
+	// }
 	if err := AssertApiItemServiceRequired(obj.Service); err != nil {
 		return err
 	}
