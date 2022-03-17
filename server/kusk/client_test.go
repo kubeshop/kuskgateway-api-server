@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
-	"github.com/kubeshop/kusk-gateway/pkg/spec"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
@@ -109,22 +108,6 @@ func TestGetSvc(t *testing.T) {
 	}
 
 	fmt.Println(svc)
-}
-
-func TestGetRawApi(t *testing.T) {
-	setup(t)
-	apis, err := testClient.GetApis()
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-		return
-	}
-	api := apis.Items[0]
-	parser := spec.NewParser(nil)
-
-	apiSpec, _ := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
-
-	fmt.Println(string([]byte(apiSpec.Extensions["x-kusk"])))
 }
 
 func getClient() (client.Client, error) {
