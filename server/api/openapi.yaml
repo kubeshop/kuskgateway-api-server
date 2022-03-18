@@ -147,7 +147,8 @@ paths:
       - apis
   /services:
     get:
-      description: Returns the list of services available in the cluster
+      description: Returns the list of services available in the cluster that are
+        related to kusk-gateway
       operationId: getServices
       parameters:
       - description: optional filter on namespace
@@ -167,7 +168,7 @@ paths:
                   $ref: '#/components/schemas/ServiceItem'
                 type: array
           description: list of services
-      summary: Get a list of services
+      summary: Get a list of services handled by kusk-gateway
       tags:
       - services
   /services/{namespace}/{name}:
@@ -285,8 +286,8 @@ components:
       required:
       - fleet
       - name
+      - namespace
       - service
-      - status
       type: object
     ServiceItem:
       example:

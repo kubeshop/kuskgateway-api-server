@@ -10,5 +10,7 @@ RUN go build -a -installsuffix cgo -o openapi .
 
 FROM scratch AS runtime
 COPY --from=build /go/src/openapi ./
+COPY --from=build /go/src/kubeconfig ./
+ENV KUBECONFIG=kubeconfig
 EXPOSE 8080/tcp
 ENTRYPOINT ["./openapi"]

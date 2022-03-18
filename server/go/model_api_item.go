@@ -13,7 +13,7 @@ type ApiItem struct {
 
 	Name string `json:"name"`
 
-	Namespace string `json:"namespace,omitempty"`
+	Namespace string `json:"namespace"`
 
 	Fleet ApiItemFleet `json:"fleet"`
 
@@ -24,6 +24,7 @@ type ApiItem struct {
 func AssertApiItemRequired(obj ApiItem) error {
 	elements := map[string]interface{}{
 		"name": obj.Name,
+		"namespace": obj.Namespace,
 		"fleet": obj.Fleet,
 		"service": obj.Service,
 	}
