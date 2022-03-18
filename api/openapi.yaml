@@ -237,7 +237,7 @@ components:
       type: object
       required:
         - name
-        - status
+        - namespace
         - fleet
         - service
       properties:
