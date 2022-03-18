@@ -106,8 +106,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-          description: Raw OpenAPI spec object
+                type: string
+          description: Raw OpenAPI spec
         "404":
           description: Raw OpenAPI spec not found
       summary: Get the raw OpenAPI spec by API id
@@ -138,8 +138,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-          description: Post-processed OpenAPI spec object
+                type: string
+          description: Post-processed OpenAPI spec
         "404":
           description: Post-processed OpenAPI spec not found
       summary: Get the post-processed OpenAPI spec by API id
