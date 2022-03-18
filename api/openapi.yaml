@@ -133,8 +133,8 @@ paths:
     get:
       tags:
         - "services"
-      summary: "Get a list of services"
-      description: "Returns the list of services available in the cluster"
+      summary: "Get a list of services handled by kusk-gateway"
+      description: "Returns the list of services available in the cluster that are related to kusk-gateway"
       operationId: getServices
       parameters:
         - name: namespace
