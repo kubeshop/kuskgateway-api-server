@@ -16,6 +16,8 @@ type EnvoyFleetItem struct {
 	Namespace string `json:"namespace"`
 
 	Apis []ApiItemFleet `json:"apis,omitempty"`
+
+	Services []ServiceItem `json:"services,omitempty"`
 }
 
 // AssertEnvoyFleetItemRequired checks if the required fields are not zero-ed
@@ -32,6 +34,11 @@ func AssertEnvoyFleetItemRequired(obj EnvoyFleetItem) error {
 
 	for _, el := range obj.Apis {
 		if err := AssertApiItemFleetRequired(el); err != nil {
+			return err
+		}
+	}
+	for _, el := range obj.Services {
+		if err := AssertServiceItemRequired(el); err != nil {
 			return err
 		}
 	}

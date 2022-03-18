@@ -4,6 +4,7 @@ import (
 	"context"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -11,9 +12,11 @@ type Client interface {
 	GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error)
 	GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, error)
 
-	GetApis() (kuskv1.APIList, error)
+	GetApis() (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
-	GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kuskv1.API, error)
+	GetApiByEnvoyFleet(fleetNamespace, fleetName string) (*kuskv1.APIList, error)
+
+	GetSvc(namespace, name string) (*corev1.Service, error)
 }
 
 type kuskClient struct {
@@ -46,13 +49,12 @@ func (k *kuskClient) GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, 
 	return envoy, nil
 }
 
-func (k *kuskClient) GetApis() (kuskv1.APIList, error) {
-
-	list := kuskv1.APIList{}
-
-	if err := k.client.List(context.TODO(), &list, &client.ListOptions{}); err != nil {
-		return list, err
+func (k *kuskClient) GetApis() (*kuskv1.APIList, error) {
+	list := &kuskv1.APIList{}
+	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
+		return nil, err
 	}
+
 	return list, nil
 }
 
@@ -67,7 +69,7 @@ func (k *kuskClient) GetApi(namespace, name string) (*kuskv1.API, error) {
 }
 
 // GetApiByFleet gets all APIs associated with the EnvoyFleet
-func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kuskv1.API, error) {
+func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) (*kuskv1.APIList, error) {
 	list := kuskv1.APIList{}
 	if err := k.client.List(context.TODO(), &list, &client.ListOptions{}); err != nil {
 		return nil, err
@@ -79,5 +81,15 @@ func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) ([]kus
 			toReturn = append(toReturn, api)
 		}
 	}
-	return toReturn, nil
+
+	return &kuskv1.APIList{Items: toReturn}, nil
+}
+
+func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
+	svc := &corev1.Service{}
+	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, svc); err != nil {
+		return nil, err
+	}
+
+	return svc, nil
 }

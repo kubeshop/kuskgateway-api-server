@@ -18,4 +18,3 @@ go/model_api_item_service.go
 go/model_envoy_fleet_item.go
 go/model_service_item.go
 go/routers.go
-main.go

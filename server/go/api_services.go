@@ -82,7 +82,7 @@ func (c *ServicesApiController) GetService(w http.ResponseWriter, r *http.Reques
 
 }
 
-// GetServices - Get a list of services
+// GetServices - Get a list of services handled by kusk-gateway
 func (c *ServicesApiController) GetServices(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	namespaceParam := query.Get("namespace")

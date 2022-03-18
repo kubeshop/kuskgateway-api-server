@@ -17,6 +17,7 @@ import (
 	"path"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -42,7 +43,7 @@ func main() {
 	FleetsApiService := openapi.NewFleetsApiService(kuskClient)
 	FleetsApiController := openapi.NewFleetsApiController(FleetsApiService)
 
-	ServicesApiService := openapi.NewServicesApiService()
+	ServicesApiService := openapi.NewServicesApiService(kuskClient)
 	ServicesApiController := openapi.NewServicesApiController(ServicesApiService)
 
 	router := openapi.NewRouter(ApisApiController, FleetsApiController, ServicesApiController)
@@ -81,6 +82,8 @@ func getConfig() (*rest.Config, error) {
 func getClient() (client.Client, error) {
 	scheme := runtime.NewScheme()
 	kuskv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
+
 	config, err := getConfig()
 	if err != nil {
 		return nil, err

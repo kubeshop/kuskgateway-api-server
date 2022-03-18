@@ -97,8 +97,9 @@ func (c *ApisApiController) GetApi(w http.ResponseWriter, r *http.Request) {
 // GetApis - Get a list of APIs
 func (c *ApisApiController) GetApis(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	fleetParam := query.Get("fleet")
-	result, err := c.service.GetApis(r.Context(), fleetParam)
+	fleetnameParam := query.Get("fleetname")
+	fleetnamespaceParam := query.Get("fleetnamespace")
+	result, err := c.service.GetApis(r.Context(), fleetnameParam, fleetnamespaceParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

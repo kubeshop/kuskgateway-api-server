@@ -9,44 +9,16 @@
 
 package openapi
 
-import (
-	"context"
-	"net/http"
-	"errors"
-)
+import kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 
 // ServicesApiService is a service that implements the logic for the ServicesApiServicer
 // This service should implement the business logic for every endpoint for the ServicesApi API.
 // Include any external packages or services that will be required by this service.
 type ServicesApiService struct {
+	kuskClient kusk.Client
 }
 
 // NewServicesApiService creates a default api service
-func NewServicesApiService() ServicesApiServicer {
-	return &ServicesApiService{}
-}
-
-// GetService - Get details for a single service
-func (s *ServicesApiService) GetService(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	// TODO - update GetService with the required logic for this service method.
-	// Add api_services_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, ServiceItem{}) or use other options such as http.Ok ...
-	//return Response(200, ServiceItem{}), nil
-
-	//TODO: Uncomment the next line to return response Response(404, {}) or use other options such as http.Ok ...
-	//return Response(404, nil),nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetService method not implemented")
-}
-
-// GetServices - Get a list of services
-func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
-	// TODO - update GetServices with the required logic for this service method.
-	// Add api_services_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, []ServiceItem{}) or use other options such as http.Ok ...
-	//return Response(200, []ServiceItem{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetServices method not implemented")
+func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
+	return &ServicesApiService{kuskClient: kuskClient}
 }

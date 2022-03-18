@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -85,9 +86,34 @@ func TestGetApi(t *testing.T) {
 	fmt.Println(api.Spec.Spec)
 }
 
+func TestGetApis(t *testing.T) {
+	setup(t)
+	apis, err := testClient.GetApis()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	fmt.Println(len(apis.Items))
+}
+
+func TestGetSvc(t *testing.T) {
+	setup(t)
+	svc, err := testClient.GetSvc("default", "kubernetes")
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+
+	fmt.Println(svc)
+}
+
 func getClient() (client.Client, error) {
 	scheme := runtime.NewScheme()
 	kuskv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
 	config, err := getConfig()
 	if err != nil {
 		return nil, err

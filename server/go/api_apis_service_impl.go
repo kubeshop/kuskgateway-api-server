@@ -11,20 +11,32 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"github.com/kubeshop/kusk-gateway/pkg/spec"
 )
 
 // GetApis - Get a list of APIs
-func (s *ApisApiService) GetApis(ctx context.Context, fleet string) (ImplResponse, error) {
-	apis, err := s.kuskClient.GetApis()
-	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
-	}
+func (s *ApisApiService) GetApis(ctx context.Context, fleetname string, fleetnamespace string) (ImplResponse, error) {
+	apis := &kuskv1.APIList{}
+	var err error
+	if fleetname == "" {
+		apis, err = s.kuskClient.GetApis()
+		if err != nil {
+			return Response(http.StatusInternalServerError, err), err
+		}
 
-	return Response(http.StatusOK, convertAPIListCRDtoAPIsModel(apis)), nil
+	} else {
+		apis, err = s.kuskClient.GetApiByEnvoyFleet(fleetnamespace, fleetname)
+		if err != nil {
+			return Response(http.StatusInternalServerError, err), err
+		}
+	}
+	return Response(http.StatusOK, s.convertAPIListCRDtoAPIsModel(*apis)), nil
+
 }
 
 // GetApi - Get an API instance by namespace and name
@@ -34,7 +46,7 @@ func (s *ApisApiService) GetApi(ctx context.Context, namespace string, name stri
 		return Response(http.StatusInternalServerError, err), err
 	}
 
-	return Response(http.StatusOK, convertAPICRDtoAPIModel(api)), nil
+	return Response(http.StatusOK, s.convertAPICRDtoAPIModel(api)), nil
 }
 
 // GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
@@ -47,17 +59,61 @@ func (s *ApisApiService) GetRawOpenApiSpec(ctx context.Context, namespace string
 	return Response(http.StatusOK, api.Spec.Spec), nil
 }
 
-func convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
+// GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
+func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	api, err := s.kuskClient.GetApi(namespace, name)
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+	parser := spec.NewParser(nil)
+
+	apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
+
+	if err != nil {
+		return Response(http.StatusInternalServerError, nil), err
+	}
+
+	opts, err := spec.GetOptions(apiSpec)
+	if err != nil {
+		return Response(http.StatusInternalServerError, nil), err
+	}
+
+	return Response(http.StatusOK, opts), nil
+}
+
+func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
 	toReturn := []ApiItem{}
 	for _, api := range apis.Items {
-		toReturn = append(toReturn, convertAPICRDtoAPIModel(&api))
+		toReturn = append(toReturn, s.convertAPICRDtoAPIModel(&api))
 	}
 	return toReturn
 }
 
-func convertAPICRDtoAPIModel(api *v1alpha1.API) ApiItem {
-	fmt.Println("api.Name", api.Name)
-	return ApiItem{
-		Name: api.Name,
+func (s *ApisApiService) convertAPICRDtoAPIModel(api *v1alpha1.API) ApiItem {
+	parser := spec.NewParser(nil)
+	apiItem := ApiItem{
+		Name:      api.Name,
+		Namespace: api.Namespace,
 	}
+
+	apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
+	if err != nil {
+		return apiItem
+	}
+
+	opts, err := spec.GetOptions(apiSpec)
+	if err != nil {
+		return apiItem
+	}
+
+	apiItem.Service = ApiItemService{
+		Name:      opts.Upstream.Service.Name,
+		Namespace: opts.Upstream.Service.Namespace,
+	}
+	apiItem.Fleet = ApiItemFleet{
+		Name:      api.Spec.Fleet.Name,
+		Namespace: api.Spec.Fleet.Namespace,
+	}
+
+	return apiItem
 }

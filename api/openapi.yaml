@@ -25,7 +25,13 @@ paths:
       description: "Returns the list of APIs available in the cluster"
       operationId: getApis
       parameters:
-        - name: fleet
+        - name: fleetname
+          in: query
+          schema:
+            type: string
+          required: false
+          description: optional filter on fleet
+        - name: fleetnamespace
           in: query
           schema:
             type: string
@@ -127,8 +133,8 @@ paths:
     get:
       tags:
         - "services"
-      summary: "Get a list of services"
-      description: "Returns the list of services available in the cluster"
+      summary: "Get a list of services handled by kusk-gateway"
+      description: "Returns the list of services available in the cluster that are related to kusk-gateway"
       operationId: getServices
       parameters:
         - name: namespace
@@ -231,16 +237,14 @@ components:
       type: object
       required:
         - name
-        - id
-        - status
+        - namespace
         - fleet
         - service
       properties:
         name:
           type: string
-        id:
+        namespace:
           type: string
-          format: uuid
         fleet:
           $ref: "#/components/schemas/ApiItem_Fleet"
         service:
@@ -249,15 +253,11 @@ components:
       type: object
       required:
         - name
-        - id
         - status
         - namespace
       properties:
         name:
           type: string
-        id:
-          type: string
-          format: uuid
         status:
           type: string
           enum:
@@ -269,7 +269,6 @@ components:
       type: object
       required:
         - name
-        - id
         - namespace
       properties:
         name:
@@ -280,6 +279,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ApiItem_Fleet"
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceItem"
     ApiItem_Fleet:
       type: object
       required:
