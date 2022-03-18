@@ -11,7 +11,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -56,7 +55,6 @@ func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) 
 		_, err = s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
 		status := "available"
 		if err != nil {
-			fmt.Println(err)
 			status = "unavailable"
 		}
 		services = append(services, ServiceItem{
