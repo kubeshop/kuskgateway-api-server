@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:4010
     description: "My local endpoint mockup"
+  - url: http://147.75.33.177:8080
+    description: "Testing endpoint"
 externalDocs:
   description: "Find out more about Kusk-Gateway"
   url: "https://kubeshop.github.io/kusk-gateway/"
@@ -37,6 +39,12 @@ paths:
             type: string
           required: false
           description: optional filter on fleet
+        - name: namespace
+          in: query
+          schema:
+            type: string
+          required: false
+          description: optional filter on namespace
       responses:
         200:
           description: a list of apis
@@ -94,11 +102,11 @@ paths:
             type: string
       responses:
         200:
-          description: "Raw OpenAPI spec object"
+          description: "Raw OpenAPI spec"
           content:
             application/json:
               schema:
-                type: object
+                type: string
         404:
           description: "Raw OpenAPI spec not found"
   /apis/{namespace}/{name}/postProcessedOpenApiSpec:
@@ -122,11 +130,11 @@ paths:
             type: string
       responses:
         200:
-          description: "Post-processed OpenAPI spec object"
+          description: "Post-processed OpenAPI spec"
           content:
             application/json:
               schema:
-                type: object
+                type: string
         404:
           description: "Post-processed OpenAPI spec not found"
   /services:
@@ -240,6 +248,7 @@ components:
         - namespace
         - fleet
         - service
+        - version
       properties:
         name:
           type: string
@@ -249,6 +258,8 @@ components:
           $ref: "#/components/schemas/ApiItem_Fleet"
         service:
           $ref: "#/components/schemas/ApiItem_Service"
+        version:
+          type: string
     ServiceItem:
       type: object
       required:
