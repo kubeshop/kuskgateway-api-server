@@ -6,11 +6,9 @@ COPY . .
 ENV CGO_ENABLED=0
 RUN go get -d -v ./...
 
-RUN go build -a -installsuffix cgo -o openapi .
+RUN go build -a -installsuffix cgo -o kusk-gateway-api .
 
 FROM scratch AS runtime
-COPY --from=build /go/src/openapi ./
-COPY --from=build /go/src/kubeconfig ./
-ENV KUBECONFIG=kubeconfig
+COPY --from=build /go/src/kusk-gateway-api ./
 EXPOSE 8080/tcp
-ENTRYPOINT ["./openapi"]
+ENTRYPOINT ["./kusk-gateway-api"]
