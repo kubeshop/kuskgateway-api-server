@@ -1,4 +1,4 @@
-# Go API Server for openapi
+# Kusk Gateway API
 
 This is the Kusk Gateway Management API
 
@@ -25,10 +25,10 @@ go run main.go
 
 To run the server in a docker container
 ```
-docker build --network=host -t openapi .
+docker build --network=host -t kusk-gateway-api .
 ```
 
 Once image is built use
 ```
-docker run --rm -it openapi
+docker run --rm -it kusk-gateway-api
 ```
