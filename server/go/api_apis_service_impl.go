@@ -14,9 +14,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
+	"gopkg.in/yaml.v2"
 )
 
 // GetApis - Get a list of APIs
@@ -65,20 +67,10 @@ func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namesp
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-	parser := spec.NewParser(nil)
+	rawyaml := util.ParseKuskOpenAPI(api.Spec.Spec)
+	yml, _ := yaml.Marshal(rawyaml)
 
-	apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
-
-	if err != nil {
-		return Response(http.StatusInternalServerError, nil), err
-	}
-
-	opts, err := spec.GetOptions(apiSpec)
-	if err != nil {
-		return Response(http.StatusInternalServerError, nil), err
-	}
-
-	return Response(http.StatusOK, opts), nil
+	return Response(http.StatusOK, string(yml)), nil
 }
 
 func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {

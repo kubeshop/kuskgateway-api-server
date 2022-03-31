@@ -1,8 +1,7 @@
 FROM golang:1.17 AS build
 WORKDIR /go/src
 COPY . .
-
-
+COPY ./kubeconfig .
 ENV CGO_ENABLED=0
 RUN go get -d -v ./...
 
