@@ -18,6 +18,8 @@ tags:
     description: "Get the list of all services"
   - name: "fleets"
     description: "Get the list of all envoy fleets"
+  - name: "static routes"
+    description: "Get the list of all static routes"
 paths:
   /apis:
     get:
@@ -54,7 +56,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiItem"
-  /apis/{namespace}/{name}":
+  /apis/{namespace}/{name}:
     get:
       tags:
         - "apis"
@@ -72,6 +74,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: crd
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: "returns the CRD of the API ( Raw Api Spec )"
       responses:
         200:
           description: "API item"
@@ -81,62 +89,6 @@ paths:
                 $ref: "#/components/schemas/ApiItem"
         404:
           description: "API item not found"
-  /apis/{namespace}/{name}/rawOpenApiSpec:
-    get:
-      tags:
-        - "apis"
-      summary: "Get the raw OpenAPI spec by API id"
-      description: "Returns the raw OpenAPI specification"
-      operationId: getRawOpenApiSpec
-      parameters:
-        - name: namespace
-          in: path
-          required: true
-          schema:
-            type: string
-            default: default
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: "Raw OpenAPI spec"
-          content:
-            application/json:
-              schema:
-                type: string
-        404:
-          description: "Raw OpenAPI spec not found"
-  /apis/{namespace}/{name}/postProcessedOpenApiSpec:
-    get:
-      tags:
-        - "apis"
-      summary: "Get the post-processed OpenAPI spec by API id"
-      description: "Returns the post-processed OpenAPI specification"
-      operationId: getPostProcessedOpenApiSpec
-      parameters:
-        - name: namespace
-          in: path
-          required: true
-          schema:
-            type: string
-            default: "default"
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: "Post-processed OpenAPI spec"
-          content:
-            application/json:
-              schema:
-                type: string
-        404:
-          description: "Post-processed OpenAPI spec not found"
   /services:
     get:
       tags:
@@ -245,6 +197,64 @@ paths:
                 $ref: "#/components/schemas/EnvoyFleetItem"
         404:
           description: "Envoy fleet not found by namespace-name combination"
+  /staticroutes:
+    get:
+      tags:
+        - "static routes"
+      summary: "Get a list of static routes"
+      description: "Returns a list of static routes"
+      operationId: getStaticRoutes
+      parameters:
+        - name: namespace
+          in: query
+          schema:
+            type: string
+          required: false
+          description: "optional filter on namespace"
+      responses:
+        200:
+          description: "list of static routes"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaticRouteItem"
+  /staticroutes/{namespace}/{name}:
+    get:
+      tags:
+        - "static routes"
+      summary: "Get details for a single static route"
+      description: "Returns an object containing info about the static route corresponding to the namespace and name"
+      operationId: getStaticRoute
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "the namespace of the static route"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "the name of the static route"
+        - name: crd
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: "return the static route CRD"
+      responses:
+        200:
+          description: "get static route details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaticRouteItem"
+        404:
+          description: "Static Route not found by namespace-name combination"
 components:
   schemas:
     ApiItem:
@@ -304,6 +314,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StaticRouteItem_Fleet"
+    StaticRouteItem:
+      type: object
+      required:
+        - name
+        - namespace
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
     ApiItem_Fleet:
       type: object
       required:
