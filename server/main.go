@@ -52,20 +52,23 @@ func main() {
 }
 
 func getConfig() (*rest.Config, error) {
-	var err error
-	var config *rest.Config
-	k8sConfigExists := false
-	homeDir, _ := os.UserHomeDir()
-	cubeConfigPath := path.Join(homeDir, ".kube/config")
+	var (
+		err             error
+		config          *rest.Config
+		k8sConfigExists bool
+	)
 
-	if _, err := os.Stat(cubeConfigPath); err == nil {
+	homeDir, _ := os.UserHomeDir()
+	kubeConfigPath := path.Join(homeDir, ".kube/config")
+
+	if _, err := os.Stat(kubeConfigPath); err == nil {
 		k8sConfigExists = true
 	}
 
 	if cfg, exists := os.LookupEnv("KUBECONFIG"); exists {
 		config, err = clientcmd.BuildConfigFromFlags("", cfg)
 	} else if k8sConfigExists {
-		config, err = clientcmd.BuildConfigFromFlags("", cubeConfigPath)
+		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
 	} else {
 		config, err = rest.InClusterConfig()
 	}
