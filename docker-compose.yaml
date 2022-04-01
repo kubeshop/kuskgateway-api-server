@@ -2,5 +2,9 @@ version: "3"
 services:
   kgwapi:
     build: ./server
+    environment:
+      - KUBECONFIG=/kube/config
+    volumes:
+      - $HOME/.kube/config:/kube/config:ro
     ports:
       - 8080:8080
