@@ -276,6 +276,8 @@ components:
           $ref: "#/components/schemas/ApiItem_Service"
         version:
           type: string
+        raw:
+          type: object
     ServiceItem:
       type: object
       required:
@@ -314,6 +316,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StaticRouteItem_Fleet"
+        raw:
+          type: object
     StaticRouteItem:
       type: object
       required:
@@ -324,6 +328,8 @@ components:
           type: string
         namespace:
           type: string
+        raw:
+          type: object
     ApiItem_Fleet:
       type: object
       required:
