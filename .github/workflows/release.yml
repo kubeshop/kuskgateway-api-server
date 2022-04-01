@@ -45,7 +45,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: server
           file: server/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
