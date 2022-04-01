@@ -25,10 +25,20 @@ go run main.go
 
 To run the server in a docker container
 ```
-docker build --network=host -t openapi .
+make build
 ```
 
 Once image is built use
 ```
-docker run --rm -it openapi
+make run
+```
+
+To run in Minikube
+```
+make run-minikube
+```
+
+To stop the api
+```
+docker-compose down
 ```
