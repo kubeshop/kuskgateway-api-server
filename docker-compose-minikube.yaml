@@ -1,0 +1,5 @@
+version: "3"
+services:
+  kgwapi:
+    volumes:
+      - $HOME/.minikube:$HOME/.minikube:ro
