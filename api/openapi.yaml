@@ -372,6 +372,7 @@ components:
         - name
         - status
         - namespace
+        - ports
       properties:
         name:
           type: string
@@ -382,6 +383,8 @@ components:
             - unavailable
         namespace:
           type: string
+        ports:
+          $ref: "#/components/schemas/ServicePortItem"
     EnvoyFleetItem:
       type: object
       required:
@@ -423,6 +426,25 @@ components:
         name:
           type: string
         namespace:
+          type: string
+    ServicePortItem:
+      type: object
+      required: 
+        - name
+        - nodePort
+        - port
+        - protocol
+        - targetPort
+      properties:
+        name:
+          type: string
+        nodePort:
+          type: number
+        port:
+          type: number
+        protocol:
+          type: string
+        targetPort:
           type: string
     StaticRouteItem_Fleet:
       type: object
