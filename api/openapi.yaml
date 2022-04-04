@@ -74,12 +74,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: crd
-          in: query
-          required: false
-          schema:
-            type: boolean
-          description: "returns the CRD of the API ( Raw Api Spec )"
       responses:
         200:
           description: "API item"
@@ -89,6 +83,60 @@ paths:
                 $ref: "#/components/schemas/ApiItem"
         404:
           description: "API item not found"
+  /apis/{namespace}/{name}/crd:
+    get:
+      tags:
+        - "apis"
+      summary: "Get API CRD from cluster"
+      operationId: getApiCRD
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "returns the CRD of the API ( Raw Api Spec )"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "API CRD not found"
+  /apis/{namespace}/{name}/definition:
+    get:
+      tags:
+        - "apis"
+      summary: "Get API definition ( Post-Processed version )"
+      operationId: getApiDefinition
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "API definition item"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "API definition not found"
   /services:
     get:
       tags:
@@ -182,12 +230,6 @@ paths:
           schema:
             type: string
           description: the name of the fleet
-        - name: crd
-          in: query
-          required: false
-          schema:
-            type: boolean
-          description: returns the fleet CRD
       responses:
         200:
           description: envoy fleet details
@@ -197,6 +239,33 @@ paths:
                 $ref: "#/components/schemas/EnvoyFleetItem"
         404:
           description: "Envoy fleet not found by namespace-name combination"
+  /fleets/{namespace}/{name}/crd:
+    get:
+      tags:
+        - "fleets"
+      summary: "Get envoy fleet CRD"
+      operationId: getFleetCRD
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Envoy fleet CRD"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "Envoy fleet CRD not found"
   /staticroutes:
     get:
       tags:
@@ -240,12 +309,6 @@ paths:
           schema:
             type: string
           description: "the name of the static route"
-        - name: crd
-          in: query
-          required: false
-          schema:
-            type: boolean
-          description: "return the static route CRD"
       responses:
         200:
           description: "get static route details"
@@ -255,6 +318,33 @@ paths:
                 $ref: "#/components/schemas/StaticRouteItem"
         404:
           description: "Static Route not found by namespace-name combination"
+  /staticroutes/{namespace}/{name}/crd:
+    get:
+      tags:
+        - "static routes"
+      summary: "Get static route CRD"
+      operationId: getStaticRouteCRD
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Static route CRD"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "Static route CRD not found"
 components:
   schemas:
     ApiItem:
@@ -276,8 +366,6 @@ components:
           $ref: "#/components/schemas/ApiItem_Service"
         version:
           type: string
-        raw:
-          type: object
     ServiceItem:
       type: object
       required:
@@ -316,8 +404,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StaticRouteItem_Fleet"
-        raw:
-          type: object
     StaticRouteItem:
       type: object
       required:
@@ -328,8 +414,6 @@ components:
           type: string
         namespace:
           type: string
-        raw:
-          type: object
     ApiItem_Fleet:
       type: object
       required:
