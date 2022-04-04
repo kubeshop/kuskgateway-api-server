@@ -36,11 +36,15 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-
+	port := ServicePortItem{
+		Port:     float32(svc.Spec.Ports[0].Port),
+		Protocol: string(svc.Spec.Ports[0].Protocol),
+	}
 	return Response(http.StatusOK, ServiceItem{
 		Name:      svc.Name,
 		Namespace: svc.Namespace,
 		Status:    "available",
+		Ports:     port,
 	}), nil
 }
 
