@@ -47,7 +47,15 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 }
 
 func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	return Response(http.StatusOK, nil), nil
+	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
+
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
+			return Response(http.StatusNotFound, err), err
+		}
+		return Response(http.StatusInternalServerError, err), err
+	}
+	return Response(http.StatusOK, fleet), nil
 }
 
 // GetEnvoyFleets - Get a list of envoy fleets
