@@ -13,7 +13,7 @@ To see how to make this your own, look here:
 [README](https://openapi-generator.tech)
 
 - API version: 1.0.0
-- Build date: 2022-03-18T10:28:30.091Z[Etc/UTC]
+- Build date: 2022-04-04T20:47:47.857Z[Etc/UTC]
 
 
 ### Running the server
@@ -25,20 +25,10 @@ go run main.go
 
 To run the server in a docker container
 ```
-make build
+docker build --network=host -t openapi .
 ```
 
 Once image is built use
 ```
-make run
-```
-
-To run in Minikube
-```
-make run-minikube
-```
-
-To stop the api
-```
-docker-compose down
+docker run --rm -it openapi
 ```

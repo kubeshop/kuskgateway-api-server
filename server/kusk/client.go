@@ -12,9 +12,11 @@ type Client interface {
 	GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error)
 	GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, error)
 
-	GetApis() (*kuskv1.APIList, error)
+	GetApis(namespace string) (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(fleetNamespace, fleetName string) (*kuskv1.APIList, error)
+	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
+	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
 }
@@ -49,9 +51,9 @@ func (k *kuskClient) GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, 
 	return envoy, nil
 }
 
-func (k *kuskClient) GetApis() (*kuskv1.APIList, error) {
+func (k *kuskClient) GetApis(namespace string) (*kuskv1.APIList, error) {
 	list := &kuskv1.APIList{}
-	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
+	if err := k.client.List(context.TODO(), list, &client.ListOptions{Namespace: namespace}); err != nil {
 		return nil, err
 	}
 
@@ -92,4 +94,22 @@ func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
 	}
 
 	return svc, nil
+}
+
+func (k *kuskClient) GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error) {
+	staticRoute := &kuskv1.StaticRoute{}
+	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, staticRoute); err != nil {
+		return nil, err
+	}
+
+	return staticRoute, nil
+}
+
+func (k *kuskClient) GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error) {
+	list := &kuskv1.StaticRouteList{}
+	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

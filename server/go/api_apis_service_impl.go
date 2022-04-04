@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"strings"
 
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
@@ -21,12 +22,24 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// ApisApiService is a service that implements the logic for the ApisApiServicer
+// This service should implement the business logic for every endpoint for the ApisApi API.
+// Include any external packages or services that will be required by this service.
+type ApisApiService struct {
+	kuskClient kusk.Client
+}
+
+// NewApisApiService creates a default api service
+func NewApisApiService(kuskClient kusk.Client) ApisApiServicer {
+	return &ApisApiService{kuskClient: kuskClient}
+}
+
 // GetApis - Get a list of APIs
-func (s *ApisApiService) GetApis(ctx context.Context, fleetname string, fleetnamespace string) (ImplResponse, error) {
+func (s *ApisApiService) GetApis(ctx context.Context, namespace string, fleetname string, fleetnamespace string) (ImplResponse, error) {
 	apis := &kuskv1.APIList{}
 	var err error
 	if fleetname == "" {
-		apis, err = s.kuskClient.GetApis()
+		apis, err = s.kuskClient.GetApis(namespace)
 		if err != nil {
 			return Response(http.StatusInternalServerError, err), err
 		}
@@ -51,8 +64,18 @@ func (s *ApisApiService) GetApi(ctx context.Context, namespace string, name stri
 	return Response(http.StatusOK, s.convertAPICRDtoAPIModel(api)), nil
 }
 
+// GetApiCRD - Get API CRD from cluster
+func (s *ApisApiService) GetApiCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	api, err := s.kuskClient.GetApi(namespace, name)
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+
+	return Response(http.StatusOK, api), nil
+}
+
 // GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
-func (s *ApisApiService) GetRawOpenApiSpec(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+func (s *ApisApiService) GetApiDefinition(ctx context.Context, namespace string, name string) (ImplResponse, error) {
 	api, err := s.kuskClient.GetApi(namespace, name)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err

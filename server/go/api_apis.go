@@ -56,22 +56,22 @@ func (c *ApisApiController) Routes() Routes {
 			c.GetApi,
 		},
 		{
+			"GetApiCRD",
+			strings.ToUpper("Get"),
+			"/apis/{namespace}/{name}/crd",
+			c.GetApiCRD,
+		},
+		{
+			"GetApiDefinition",
+			strings.ToUpper("Get"),
+			"/apis/{namespace}/{name}/definition",
+			c.GetApiDefinition,
+		},
+		{
 			"GetApis",
 			strings.ToUpper("Get"),
 			"/apis",
 			c.GetApis,
-		},
-		{
-			"GetPostProcessedOpenApiSpec",
-			strings.ToUpper("Get"),
-			"/apis/{namespace}/{name}/postProcessedOpenApiSpec",
-			c.GetPostProcessedOpenApiSpec,
-		},
-		{
-			"GetRawOpenApiSpec",
-			strings.ToUpper("Get"),
-			"/apis/{namespace}/{name}/rawOpenApiSpec",
-			c.GetRawOpenApiSpec,
 		},
 	}
 }
@@ -94,48 +94,49 @@ func (c *ApisApiController) GetApi(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetApiCRD - Get API CRD from cluster
+func (c *ApisApiController) GetApiCRD(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	result, err := c.service.GetApiCRD(r.Context(), namespaceParam, nameParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetApiDefinition - Get API definition ( Post-Processed version )
+func (c *ApisApiController) GetApiDefinition(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	result, err := c.service.GetApiDefinition(r.Context(), namespaceParam, nameParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
 // GetApis - Get a list of APIs
 func (c *ApisApiController) GetApis(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	fleetnameParam := query.Get("fleetname")
 	fleetnamespaceParam := query.Get("fleetnamespace")
-	result, err := c.service.GetApis(r.Context(), fleetnameParam, fleetnamespaceParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
-func (c *ApisApiController) GetPostProcessedOpenApiSpec(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	namespaceParam := params["namespace"]
-
-	nameParam := params["name"]
-
-	result, err := c.service.GetPostProcessedOpenApiSpec(r.Context(), namespaceParam, nameParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// GetRawOpenApiSpec - Get the raw OpenAPI spec by API id
-func (c *ApisApiController) GetRawOpenApiSpec(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	namespaceParam := params["namespace"]
-
-	nameParam := params["name"]
-
-	result, err := c.service.GetRawOpenApiSpec(r.Context(), namespaceParam, nameParam)
+	namespaceParam := query.Get("namespace")
+	result, err := c.service.GetApis(r.Context(), fleetnameParam, fleetnamespaceParam, namespaceParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

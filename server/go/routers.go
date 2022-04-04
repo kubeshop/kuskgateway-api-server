@@ -12,8 +12,8 @@ package openapi
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -24,9 +24,9 @@ import (
 
 // A Route defines the parameters for an api endpoint
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
+	Name		string
+	Method	  string
+	Pattern	 string
 	HandlerFunc http.HandlerFunc
 }
 

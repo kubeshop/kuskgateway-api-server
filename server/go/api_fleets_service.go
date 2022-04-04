@@ -46,6 +46,10 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 	return Response(http.StatusOK, s.convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
 }
 
+func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	return Response(http.StatusOK, nil), nil
+}
+
 // GetEnvoyFleets - Get a list of envoy fleets
 func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string) (ImplResponse, error) {
 	fleets, err := s.kuskClient.GetEnvoyFleets()

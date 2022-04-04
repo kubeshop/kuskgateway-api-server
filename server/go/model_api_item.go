@@ -10,6 +10,7 @@
 package openapi
 
 type ApiItem struct {
+
 	Name string `json:"name"`
 
 	Namespace string `json:"namespace"`
@@ -17,15 +18,18 @@ type ApiItem struct {
 	Fleet ApiItemFleet `json:"fleet"`
 
 	Service ApiItemService `json:"service"`
+
+	Version string `json:"version"`
 }
 
 // AssertApiItemRequired checks if the required fields are not zero-ed
 func AssertApiItemRequired(obj ApiItem) error {
 	elements := map[string]interface{}{
-		"name":      obj.Name,
+		"name": obj.Name,
 		"namespace": obj.Namespace,
-		"fleet":     obj.Fleet,
-		"service":   obj.Service,
+		"fleet": obj.Fleet,
+		"service": obj.Service,
+		"version": obj.Version,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
