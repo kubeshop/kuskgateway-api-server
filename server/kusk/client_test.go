@@ -9,6 +9,8 @@ import (
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -20,8 +22,8 @@ var testClient Client
 
 func setup(tb testing.TB) {
 	if _, fakeIt := os.LookupEnv("FAKE"); fakeIt {
-		fakeClient := fake.NewClientBuilder().Build()
-		testClient = NewClient(fakeClient)
+
+		testClient = NewClient(getFakeClient())
 		return
 	}
 	k8sclient, err := getClient()
@@ -88,29 +90,62 @@ func TestGetApi(t *testing.T) {
 
 func TestGetApis(t *testing.T) {
 	setup(t)
-	apis, err := testClient.GetApis("default")
+	_, err := testClient.GetApis("default")
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
 
-	fmt.Println(len(apis.Items))
 }
 
 func TestGetSvc(t *testing.T) {
 	setup(t)
-	svc, err := testClient.GetSvc("default", "kubernetes")
+	_, err := testClient.GetSvc("default", "kubernetes")
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
 
-	fmt.Println(svc)
+}
+
+func getFakeClient() client.Client {
+
+	scheme := runtime.NewScheme()
+	kuskv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
+
+	initObjects := []client.Object{
+		&corev1.Service{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "kubernetes",
+				Namespace: "default",
+			},
+		},
+		&kuskv1.API{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "httpbin-sample",
+				Namespace: "default",
+			},
+		},
+		&kuskv1.EnvoyFleet{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "default",
+				Namespace: "default",
+			},
+		},
+	}
+
+	fakeClient := fake.NewClientBuilder().
+		WithScheme(scheme).
+		WithObjects(initObjects...).
+		Build()
+	return fakeClient
 }
 
 func getClient() (client.Client, error) {
+	fmt.Println("HERE")
 	scheme := runtime.NewScheme()
 	kuskv1.AddToScheme(scheme)
 	corev1.AddToScheme(scheme)
