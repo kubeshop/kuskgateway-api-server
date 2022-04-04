@@ -4,7 +4,7 @@ import "net/http"
 
 type ProbeController struct{}
 
-func NewProbeControler() Router {
+func NewProbeController() Router {
 	return &ProbeController{}
 }
 

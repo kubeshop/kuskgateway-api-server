@@ -46,7 +46,7 @@ func main() {
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
 	ServicesApiController := openapi.NewServicesApiController(ServicesApiService)
 
-	ProbeController := openapi.NewProbeControler()
+	ProbeController := openapi.NewProbeController()
 
 	router := openapi.NewRouter(
 		ApisApiController,
