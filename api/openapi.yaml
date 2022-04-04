@@ -244,7 +244,7 @@ paths:
       tags:
         - "fleets"
       summary: "Get envoy fleet CRD"
-      operationId: getFleetCRD
+      operationId: getEnvoyFleetCRD
       parameters:
         - name: namespace
           in: path
@@ -429,7 +429,7 @@ components:
           type: string
     ServicePortItem:
       type: object
-      required: 
+      required:
         - name
         - nodePort
         - port
