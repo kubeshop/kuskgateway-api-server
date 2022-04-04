@@ -46,7 +46,14 @@ func main() {
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
 	ServicesApiController := openapi.NewServicesApiController(ServicesApiService)
 
-	router := openapi.NewRouter(ApisApiController, FleetsApiController, ServicesApiController)
+	ProbeController := openapi.NewProbeControler()
+
+	router := openapi.NewRouter(
+		ApisApiController,
+		FleetsApiController,
+		ServicesApiController,
+		ProbeController,
+	)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
