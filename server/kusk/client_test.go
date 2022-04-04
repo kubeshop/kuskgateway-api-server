@@ -88,7 +88,7 @@ func TestGetApi(t *testing.T) {
 
 func TestGetApis(t *testing.T) {
 	setup(t)
-	apis, err := testClient.GetApis()
+	apis, err := testClient.GetApis("default")
 	if err != nil {
 		t.Error(err)
 		t.Fail()
