@@ -87,7 +87,7 @@ paths:
     get:
       tags:
         - "apis"
-      summary: "Get API CRD ( Pre-Processed version )"
+      summary: "Get API CRD from cluster"
       operationId: getApiCRD
       parameters:
         - name: namespace
