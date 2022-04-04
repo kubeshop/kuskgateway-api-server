@@ -9,3 +9,5 @@ run:
 
 run-minikube:
 	docker-compose -f docker-compose.yaml -f docker-compose-minikube.yaml up --build -d
+test: 
+	cd ./server && FAKE=true go test -v ./...
