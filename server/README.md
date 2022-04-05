@@ -30,5 +30,5 @@ docker build --network=host -t openapi .
 
 Once image is built use
 ```
-docker run --rm -it openapi
+make build
 ```
