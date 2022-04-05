@@ -441,9 +441,9 @@ components:
         name:
           type: string
         nodePort:
-          type: number
+          type: integer
         port:
-          type: number
+          type: integer
         protocol:
           type: string
         targetPort:
