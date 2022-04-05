@@ -86,9 +86,23 @@ func (s *FleetsApiService) convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1
 			})
 		}
 	}
+	srs := []StaticRouteItemFleet{}
+	staticRoutes, err := s.kuskClient.GetStaticRoutes("")
+	if err == nil {
+		for _, sr := range staticRoutes.Items {
+			if sr.Spec.Fleet.Name == fleet.Name && sr.Spec.Fleet.Namespace == fleet.Namespace {
+				srs = append(srs, StaticRouteItemFleet{
+					Name:      sr.Name,
+					Namespace: sr.Namespace,
+				})
+			}
+		}
+	}
+
 	return EnvoyFleetItem{
-		Name:      fleet.Name,
-		Namespace: fleet.Namespace,
-		Apis:      apifs,
+		Name:         fleet.Name,
+		Namespace:    fleet.Namespace,
+		Apis:         apifs,
+		StaticRoutes: srs,
 	}
 }

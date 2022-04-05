@@ -16,7 +16,6 @@ import (
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
-	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
 	"gopkg.in/yaml.v2"
@@ -96,7 +95,7 @@ func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namesp
 	return Response(http.StatusOK, string(yml)), nil
 }
 
-func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []ApiItem {
+func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis kuskv1.APIList) []ApiItem {
 	toReturn := []ApiItem{}
 	for _, api := range apis.Items {
 		toReturn = append(toReturn, s.convertAPICRDtoAPIModel(&api))
@@ -104,7 +103,7 @@ func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis v1alpha1.APIList) []A
 	return toReturn
 }
 
-func (s *ApisApiService) convertAPICRDtoAPIModel(api *v1alpha1.API) ApiItem {
+func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 	parser := spec.NewParser(nil)
 	apiItem := ApiItem{
 		Name:      api.Name,
