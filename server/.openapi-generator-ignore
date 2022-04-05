@@ -2,3 +2,4 @@ go/api_fleets_service.go
 main.go
 go/go.mod
 go/Dockerfile
+Dockerfile

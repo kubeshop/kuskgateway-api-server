@@ -19,9 +19,9 @@ import (
 // pass the data to a ApisApiServicer to perform the required actions, then write the service results to the http response.
 type ApisApiRouter interface {
 	GetApi(http.ResponseWriter, *http.Request)
+	GetApiCRD(http.ResponseWriter, *http.Request)
+	GetApiDefinition(http.ResponseWriter, *http.Request)
 	GetApis(http.ResponseWriter, *http.Request)
-	GetPostProcessedOpenApiSpec(http.ResponseWriter, *http.Request)
-	GetRawOpenApiSpec(http.ResponseWriter, *http.Request)
 }
 
 // FleetsApiRouter defines the required methods for binding the api requests to a responses for the FleetsApi
@@ -29,6 +29,7 @@ type ApisApiRouter interface {
 // pass the data to a FleetsApiServicer to perform the required actions, then write the service results to the http response.
 type FleetsApiRouter interface {
 	GetEnvoyFleet(http.ResponseWriter, *http.Request)
+	GetEnvoyFleetCRD(http.ResponseWriter, *http.Request)
 	GetEnvoyFleets(http.ResponseWriter, *http.Request)
 }
 
@@ -40,15 +41,24 @@ type ServicesApiRouter interface {
 	GetServices(http.ResponseWriter, *http.Request)
 }
 
+// StaticRoutesApiRouter defines the required methods for binding the api requests to a responses for the StaticRoutesApi
+// The StaticRoutesApiRouter implementation should parse necessary information from the http request,
+// pass the data to a StaticRoutesApiServicer to perform the required actions, then write the service results to the http response.
+type StaticRoutesApiRouter interface {
+	GetStaticRoute(http.ResponseWriter, *http.Request)
+	GetStaticRouteCRD(http.ResponseWriter, *http.Request)
+	GetStaticRoutes(http.ResponseWriter, *http.Request)
+}
+
 // ApisApiServicer defines the api actions for the ApisApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type ApisApiServicer interface {
 	GetApi(context.Context, string, string) (ImplResponse, error)
-	GetApis(context.Context, string, string) (ImplResponse, error)
-	GetPostProcessedOpenApiSpec(context.Context, string, string) (ImplResponse, error)
-	GetRawOpenApiSpec(context.Context, string, string) (ImplResponse, error)
+	GetApiCRD(context.Context, string, string) (ImplResponse, error)
+	GetApiDefinition(context.Context, string, string) (ImplResponse, error)
+	GetApis(context.Context, string, string, string) (ImplResponse, error)
 }
 
 // FleetsApiServicer defines the api actions for the FleetsApi service
@@ -57,6 +67,7 @@ type ApisApiServicer interface {
 // and updated with the logic required for the API.
 type FleetsApiServicer interface {
 	GetEnvoyFleet(context.Context, string, string) (ImplResponse, error)
+	GetEnvoyFleetCRD(context.Context, string, string) (ImplResponse, error)
 	GetEnvoyFleets(context.Context, string) (ImplResponse, error)
 }
 
@@ -67,4 +78,14 @@ type FleetsApiServicer interface {
 type ServicesApiServicer interface {
 	GetService(context.Context, string, string) (ImplResponse, error)
 	GetServices(context.Context, string) (ImplResponse, error)
+}
+
+// StaticRoutesApiServicer defines the api actions for the StaticRoutesApi service
+// This interface intended to stay up to date with the openapi yaml used to generate it,
+// while the service implementation can ignored with the .openapi-generator-ignore file
+// and updated with the logic required for the API.
+type StaticRoutesApiServicer interface {
+	GetStaticRoute(context.Context, string, string) (ImplResponse, error)
+	GetStaticRouteCRD(context.Context, string, string) (ImplResponse, error)
+	GetStaticRoutes(context.Context, string) (ImplResponse, error)
 }

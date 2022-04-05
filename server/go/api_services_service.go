@@ -8,17 +8,3 @@
  */
 
 package openapi
-
-import kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
-
-// ServicesApiService is a service that implements the logic for the ServicesApiServicer
-// This service should implement the business logic for every endpoint for the ServicesApi API.
-// Include any external packages or services that will be required by this service.
-type ServicesApiService struct {
-	kuskClient kusk.Client
-}
-
-// NewServicesApiService creates a default api service
-func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
-	return &ServicesApiService{kuskClient: kuskClient}
-}

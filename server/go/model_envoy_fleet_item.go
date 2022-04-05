@@ -10,6 +10,7 @@
 package openapi
 
 type EnvoyFleetItem struct {
+
 	Name string `json:"name"`
 
 	Namespace string `json:"namespace"`
@@ -17,12 +18,14 @@ type EnvoyFleetItem struct {
 	Apis []ApiItemFleet `json:"apis,omitempty"`
 
 	Services []ServiceItem `json:"services,omitempty"`
+
+	StaticRoutes []StaticRouteItemFleet `json:"staticRoutes,omitempty"`
 }
 
 // AssertEnvoyFleetItemRequired checks if the required fields are not zero-ed
 func AssertEnvoyFleetItemRequired(obj EnvoyFleetItem) error {
 	elements := map[string]interface{}{
-		"name":      obj.Name,
+		"name": obj.Name,
 		"namespace": obj.Namespace,
 	}
 	for name, el := range elements {
@@ -38,6 +41,11 @@ func AssertEnvoyFleetItemRequired(obj EnvoyFleetItem) error {
 	}
 	for _, el := range obj.Services {
 		if err := AssertServiceItemRequired(el); err != nil {
+			return err
+		}
+	}
+	for _, el := range obj.StaticRoutes {
+		if err := AssertStaticRouteItemFleetRequired(el); err != nil {
 			return err
 		}
 	}

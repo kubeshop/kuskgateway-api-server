@@ -56,6 +56,12 @@ func (c *FleetsApiController) Routes() Routes {
 			c.GetEnvoyFleet,
 		},
 		{
+			"GetEnvoyFleetCRD",
+			strings.ToUpper("Get"),
+			"/fleets/{namespace}/{name}/crd",
+			c.GetEnvoyFleetCRD,
+		},
+		{
 			"GetEnvoyFleets",
 			strings.ToUpper("Get"),
 			"/fleets",
@@ -72,6 +78,24 @@ func (c *FleetsApiController) GetEnvoyFleet(w http.ResponseWriter, r *http.Reque
 	nameParam := params["name"]
 
 	result, err := c.service.GetEnvoyFleet(r.Context(), namespaceParam, nameParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetEnvoyFleetCRD - Get envoy fleet CRD
+func (c *FleetsApiController) GetEnvoyFleetCRD(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	result, err := c.service.GetEnvoyFleetCRD(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

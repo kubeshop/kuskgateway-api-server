@@ -14,8 +14,21 @@ import (
 	"net/http"
 	"strings"
 
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
 )
+
+// ServicesApiService is a service that implements the logic for the ServicesApiServicer
+// This service should implement the business logic for every endpoint for the ServicesApi API.
+// Include any external packages or services that will be required by this service.
+type ServicesApiService struct {
+	kuskClient kusk.Client
+}
+
+// NewServicesApiService creates a default api service
+func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
+	return &ServicesApiService{kuskClient: kuskClient}
+}
 
 // GetService - Get details for a single service
 func (s *ServicesApiService) GetService(ctx context.Context, namespace string, name string) (ImplResponse, error) {
@@ -23,17 +36,21 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-
+	port := ServicePortItem{
+		Port:     float32(svc.Spec.Ports[0].Port),
+		Protocol: string(svc.Spec.Ports[0].Protocol),
+	}
 	return Response(http.StatusOK, ServiceItem{
 		Name:      svc.Name,
 		Namespace: svc.Namespace,
 		Status:    "available",
+		Ports:     port,
 	}), nil
 }
 
 // GetServices - Get a list of services
 func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
-	apis, err := s.kuskClient.GetApis()
+	apis, err := s.kuskClient.GetApis(namespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
