@@ -9,6 +9,8 @@ externalDocs:
 servers:
 - description: My local endpoint mockup
   url: http://localhost:4010
+- description: Testing endpoint
+  url: http://147.75.33.177:8080
 tags:
 - description: Get the list of the APIs
   name: apis
@@ -16,6 +18,8 @@ tags:
   name: services
 - description: Get the list of all envoy fleets
   name: fleets
+- description: Get the list of all static routes
+  name: static routes
 paths:
   /apis:
     get:
@@ -38,6 +42,14 @@ paths:
         schema:
           type: string
         style: form
+      - description: optional filter on namespace
+        explode: true
+        in: query
+        name: namespace
+        required: false
+        schema:
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -50,7 +62,7 @@ paths:
       summary: Get a list of APIs
       tags:
       - apis
-  /apis/{namespace}/{name}":
+  /apis/{namespace}/{name}:
     get:
       operationId: getApi
       parameters:
@@ -81,10 +93,9 @@ paths:
       summary: Get an API instance by namespace and name
       tags:
       - apis
-  /apis/{namespace}/{name}/rawOpenApiSpec:
+  /apis/{namespace}/{name}/crd:
     get:
-      description: Returns the raw OpenAPI specification
-      operationId: getRawOpenApiSpec
+      operationId: getApiCRD
       parameters:
       - explode: false
         in: path
@@ -106,17 +117,16 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-          description: Raw OpenAPI spec
+                type: object
+          description: returns the CRD of the API ( Raw Api Spec )
         "404":
-          description: Raw OpenAPI spec not found
-      summary: Get the raw OpenAPI spec by API id
+          description: API CRD not found
+      summary: Get API CRD from cluster
       tags:
       - apis
-  /apis/{namespace}/{name}/postProcessedOpenApiSpec:
+  /apis/{namespace}/{name}/definition:
     get:
-      description: Returns the post-processed OpenAPI specification
-      operationId: getPostProcessedOpenApiSpec
+      operationId: getApiDefinition
       parameters:
       - explode: false
         in: path
@@ -138,11 +148,11 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-          description: Post-processed OpenAPI spec
+                type: object
+          description: API definition item
         "404":
-          description: Post-processed OpenAPI spec not found
-      summary: Get the post-processed OpenAPI spec by API id
+          description: API definition not found
+      summary: Get API definition ( Post-Processed version )
       tags:
       - apis
   /services:
@@ -262,6 +272,127 @@ paths:
       summary: Get details for a single envoy fleet
       tags:
       - fleets
+  /fleets/{namespace}/{name}/crd:
+    get:
+      operationId: getEnvoyFleetCRD
+      parameters:
+      - explode: false
+        in: path
+        name: namespace
+        required: true
+        schema:
+          default: default
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Envoy fleet CRD
+        "404":
+          description: Envoy fleet CRD not found
+      summary: Get envoy fleet CRD
+      tags:
+      - fleets
+  /staticroutes:
+    get:
+      description: Returns a list of static routes
+      operationId: getStaticRoutes
+      parameters:
+      - description: optional filter on namespace
+        explode: true
+        in: query
+        name: namespace
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/StaticRouteItem'
+                type: array
+          description: list of static routes
+      summary: Get a list of static routes
+      tags:
+      - static routes
+  /staticroutes/{namespace}/{name}:
+    get:
+      description: Returns an object containing info about the static route corresponding
+        to the namespace and name
+      operationId: getStaticRoute
+      parameters:
+      - description: the namespace of the static route
+        explode: false
+        in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the name of the static route
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticRouteItem'
+          description: get static route details
+        "404":
+          description: Static Route not found by namespace-name combination
+      summary: Get details for a single static route
+      tags:
+      - static routes
+  /staticroutes/{namespace}/{name}/crd:
+    get:
+      operationId: getStaticRouteCRD
+      parameters:
+      - explode: false
+        in: path
+        name: namespace
+        required: true
+        schema:
+          default: default
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Static route CRD
+        "404":
+          description: Static route CRD not found
+      summary: Get static route CRD
+      tags:
+      - static routes
 components:
   schemas:
     ApiItem:
@@ -274,6 +405,7 @@ components:
           namespace: namespace
         name: name
         namespace: namespace
+        version: version
       properties:
         name:
           type: string
@@ -283,16 +415,25 @@ components:
           $ref: '#/components/schemas/ApiItem_Fleet'
         service:
           $ref: '#/components/schemas/ApiItem_Service'
+        version:
+          type: string
       required:
       - fleet
       - name
       - namespace
       - service
+      - version
       type: object
     ServiceItem:
       example:
         name: name
         namespace: namespace
+        ports:
+          protocol: protocol
+          port: 6.027456183070403
+          name: name
+          nodePort: 0.8008281904610115
+          targetPort: targetPort
         status: available
       properties:
         name:
@@ -304,13 +445,21 @@ components:
           type: string
         namespace:
           type: string
+        ports:
+          $ref: '#/components/schemas/ServicePortItem'
       required:
       - name
       - namespace
+      - ports
       - status
       type: object
     EnvoyFleetItem:
       example:
+        staticRoutes:
+        - name: name
+          namespace: namespace
+        - name: name
+          namespace: namespace
         apis:
         - name: name
           namespace: namespace
@@ -321,9 +470,21 @@ components:
         services:
         - name: name
           namespace: namespace
+          ports:
+            protocol: protocol
+            port: 6.027456183070403
+            name: name
+            nodePort: 0.8008281904610115
+            targetPort: targetPort
           status: available
         - name: name
           namespace: namespace
+          ports:
+            protocol: protocol
+            port: 6.027456183070403
+            name: name
+            nodePort: 0.8008281904610115
+            targetPort: targetPort
           status: available
       properties:
         name:
@@ -338,11 +499,66 @@ components:
           items:
             $ref: '#/components/schemas/ServiceItem'
           type: array
+        staticRoutes:
+          items:
+            $ref: '#/components/schemas/StaticRouteItem_Fleet'
+          type: array
+      required:
+      - name
+      - namespace
+      type: object
+    StaticRouteItem:
+      example:
+        name: name
+        namespace: namespace
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
       required:
       - name
       - namespace
       type: object
     ApiItem_Fleet:
+      example:
+        name: name
+        namespace: namespace
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    ServicePortItem:
+      example:
+        protocol: protocol
+        port: 6.027456183070403
+        name: name
+        nodePort: 0.8008281904610115
+        targetPort: targetPort
+      properties:
+        name:
+          type: string
+        nodePort:
+          type: number
+        port:
+          type: number
+        protocol:
+          type: string
+        targetPort:
+          type: string
+      required:
+      - name
+      - nodePort
+      - port
+      - protocol
+      - targetPort
+      type: object
+    StaticRouteItem_Fleet:
       example:
         name: name
         namespace: namespace

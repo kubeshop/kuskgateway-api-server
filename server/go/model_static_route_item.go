@@ -9,15 +9,15 @@
 
 package openapi
 
-type ApiItemFleet struct {
+type StaticRouteItem struct {
 
 	Name string `json:"name"`
 
 	Namespace string `json:"namespace"`
 }
 
-// AssertApiItemFleetRequired checks if the required fields are not zero-ed
-func AssertApiItemFleetRequired(obj ApiItemFleet) error {
+// AssertStaticRouteItemRequired checks if the required fields are not zero-ed
+func AssertStaticRouteItemRequired(obj StaticRouteItem) error {
 	elements := map[string]interface{}{
 		"name": obj.Name,
 		"namespace": obj.Namespace,
@@ -31,14 +31,14 @@ func AssertApiItemFleetRequired(obj ApiItemFleet) error {
 	return nil
 }
 
-// AssertRecurseApiItemFleetRequired recursively checks if required fields are not zero-ed in a nested slice.
-// Accepts only nested slice of ApiItemFleet (e.g. [][]ApiItemFleet), otherwise ErrTypeAssertionError is thrown.
-func AssertRecurseApiItemFleetRequired(objSlice interface{}) error {
+// AssertRecurseStaticRouteItemRequired recursively checks if required fields are not zero-ed in a nested slice.
+// Accepts only nested slice of StaticRouteItem (e.g. [][]StaticRouteItem), otherwise ErrTypeAssertionError is thrown.
+func AssertRecurseStaticRouteItemRequired(objSlice interface{}) error {
 	return AssertRecurseInterfaceRequired(objSlice, func(obj interface{}) error {
-		aApiItemFleet, ok := obj.(ApiItemFleet)
+		aStaticRouteItem, ok := obj.(StaticRouteItem)
 		if !ok {
 			return ErrTypeAssertionError
 		}
-		return AssertApiItemFleetRequired(aApiItemFleet)
+		return AssertStaticRouteItemRequired(aStaticRouteItem)
 	})
 }

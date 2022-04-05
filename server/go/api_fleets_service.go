@@ -46,6 +46,18 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 	return Response(http.StatusOK, s.convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
 }
 
+func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
+
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
+			return Response(http.StatusNotFound, err), err
+		}
+		return Response(http.StatusInternalServerError, err), err
+	}
+	return Response(http.StatusOK, fleet), nil
+}
+
 // GetEnvoyFleets - Get a list of envoy fleets
 func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string) (ImplResponse, error) {
 	fleets, err := s.kuskClient.GetEnvoyFleets()
@@ -74,9 +86,23 @@ func (s *FleetsApiService) convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1
 			})
 		}
 	}
+	srs := []StaticRouteItemFleet{}
+	staticRoutes, err := s.kuskClient.GetStaticRoutes("")
+	if err == nil {
+		for _, sr := range staticRoutes.Items {
+			if sr.Spec.Fleet.Name == fleet.Name && sr.Spec.Fleet.Namespace == fleet.Namespace {
+				srs = append(srs, StaticRouteItemFleet{
+					Name:      sr.Name,
+					Namespace: sr.Namespace,
+				})
+			}
+		}
+	}
+
 	return EnvoyFleetItem{
-		Name:      fleet.Name,
-		Namespace: fleet.Namespace,
-		Apis:      apifs,
+		Name:         fleet.Name,
+		Namespace:    fleet.Namespace,
+		Apis:         apifs,
+		StaticRoutes: srs,
 	}
 }

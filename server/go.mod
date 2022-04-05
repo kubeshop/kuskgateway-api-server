@@ -2,16 +2,17 @@ module github.com/GIT_USER_ID/GIT_REPO_ID
 
 go 1.17
 
+require github.com/gorilla/mux v1.8.0
+
 require (
 	github.com/gorilla/handlers v1.5.1
-	github.com/gorilla/mux v1.8.0
-	github.com/kubeshop/kusk-gateway v0.0.0-alpha.2.1.4.0.20220316121026-aef038baad91
+	github.com/kubeshop/kusk-gateway v1.0.0-beta2
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
-	k8s.io/api v0.23.4
-	k8s.io/apimachinery v0.23.4
-	k8s.io/client-go v0.23.4
-	sigs.k8s.io/controller-runtime v0.11.1
+	k8s.io/api v0.23.5
+	k8s.io/apimachinery v0.23.5
+	k8s.io/client-go v0.23.5
+	sigs.k8s.io/controller-runtime v0.11.2
 )
 
 require (
