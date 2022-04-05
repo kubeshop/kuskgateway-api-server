@@ -384,7 +384,9 @@ components:
         namespace:
           type: string
         ports:
-          $ref: "#/components/schemas/ServicePortItem"
+          type: array
+          items:
+            $ref: "#/components/schemas/ServicePortItem"
     EnvoyFleetItem:
       type: object
       required:
