@@ -72,6 +72,18 @@ paths:
       responses:
         201:
           description: "API deployed"
+        400:
+          description: "The content of the API is malformed"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: string
   /apis/{namespace}/{name}:
     get:
       tags:
