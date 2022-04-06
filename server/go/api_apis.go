@@ -136,6 +136,7 @@ func (c *ApisApiController) GetApis(w http.ResponseWriter, r *http.Request) {
 	fleetnameParam := query.Get("fleetname")
 	fleetnamespaceParam := query.Get("fleetnamespace")
 	namespaceParam := query.Get("namespace")
+
 	result, err := c.service.GetApis(r.Context(), fleetnameParam, fleetnamespaceParam, namespaceParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {

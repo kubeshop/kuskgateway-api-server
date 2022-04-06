@@ -14,7 +14,7 @@ type Client interface {
 
 	GetApis(namespace string) (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
-	GetApiByEnvoyFleet(fleetNamespace, fleetName string) (*kuskv1.APIList, error)
+	GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error)
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 
@@ -71,9 +71,9 @@ func (k *kuskClient) GetApi(namespace, name string) (*kuskv1.API, error) {
 }
 
 // GetApiByFleet gets all APIs associated with the EnvoyFleet
-func (k *kuskClient) GetApiByEnvoyFleet(fleetNamespace, fleetName string) (*kuskv1.APIList, error) {
+func (k *kuskClient) GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error) {
 	list := kuskv1.APIList{}
-	if err := k.client.List(context.TODO(), &list, &client.ListOptions{}); err != nil {
+	if err := k.client.List(context.TODO(), &list, &client.ListOptions{Namespace: namespace}); err != nil {
 		return nil, err
 	}
 

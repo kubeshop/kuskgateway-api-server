@@ -77,7 +77,7 @@ func (s *FleetsApiService) convertEnvoyFleetListCRDtoEnvoyFleetsModel(fleets *v1
 
 func (s *FleetsApiService) convertEnvoyFleetCRDtoEnvoyFleetModel(fleet *v1alpha1.EnvoyFleet) EnvoyFleetItem {
 	apifs := []ApiItemFleet{}
-	apis, err := s.kuskClient.GetApiByEnvoyFleet(fleet.Namespace, fleet.Name)
+	apis, err := s.kuskClient.GetApiByEnvoyFleet("", fleet.Namespace, fleet.Name)
 	if err == nil {
 		for _, api := range apis.Items {
 			apifs = append(apifs, ApiItemFleet{
