@@ -69,11 +69,6 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                api:
-                  type: object
-              required:
-                - api
       responses:
         201:
           description: "API deployed"
