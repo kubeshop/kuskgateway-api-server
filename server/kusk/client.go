@@ -5,6 +5,7 @@ import (
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -15,6 +16,8 @@ type Client interface {
 	GetApis(namespace string) (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error)
+	CreateApi(name, namespace, openapispec string) (*kuskv1.API, error)
+
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 
@@ -85,6 +88,22 @@ func (k *kuskClient) GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName str
 	}
 
 	return &kuskv1.APIList{Items: toReturn}, nil
+}
+
+func (k *kuskClient) CreateApi(name, namespace, openapispec string) (*kuskv1.API, error) {
+	api := &kuskv1.API{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: kuskv1.APISpec{
+			Spec: openapispec,
+		},
+	}
+	if err := k.client.Create(context.TODO(), api, &client.CreateOptions{}); err != nil {
+		return nil, err
+	}
+	return api, nil
 }
 
 func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {

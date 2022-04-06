@@ -62,6 +62,36 @@ paths:
       summary: Get a list of APIs
       tags:
       - apis
+    post:
+      description: Deploys a new API to the cluster
+      operationId: deployApi
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                openapi:
+                  type: string
+              type: object
+        description: API content that needs to be deployed
+        required: true
+      responses:
+        "201":
+          description: API deployed
+        "400":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: The content of the API is malformed
+      summary: Deploy new API
+      tags:
+      - apis
   /apis/{namespace}/{name}:
     get:
       operationId: getApi
@@ -394,6 +424,13 @@ paths:
       tags:
       - static routes
 components:
+  requestBodies:
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+      required: true
   schemas:
     ApiItem:
       example:
@@ -429,10 +466,15 @@ components:
         name: name
         namespace: namespace
         ports:
-          protocol: protocol
-          port: 6.027456183070403
+        - protocol: protocol
+          port: 6
           name: name
-          nodePort: 0.8008281904610115
+          nodePort: 0
+          targetPort: targetPort
+        - protocol: protocol
+          port: 6
+          name: name
+          nodePort: 0
           targetPort: targetPort
         status: available
       properties:
@@ -446,7 +488,9 @@ components:
         namespace:
           type: string
         ports:
-          $ref: '#/components/schemas/ServicePortItem'
+          items:
+            $ref: '#/components/schemas/ServicePortItem'
+          type: array
       required:
       - name
       - namespace
@@ -471,19 +515,29 @@ components:
         - name: name
           namespace: namespace
           ports:
-            protocol: protocol
-            port: 6.027456183070403
+          - protocol: protocol
+            port: 6
             name: name
-            nodePort: 0.8008281904610115
+            nodePort: 0
+            targetPort: targetPort
+          - protocol: protocol
+            port: 6
+            name: name
+            nodePort: 0
             targetPort: targetPort
           status: available
         - name: name
           namespace: namespace
           ports:
-            protocol: protocol
-            port: 6.027456183070403
+          - protocol: protocol
+            port: 6
             name: name
-            nodePort: 0.8008281904610115
+            nodePort: 0
+            targetPort: targetPort
+          - protocol: protocol
+            port: 6
+            name: name
+            nodePort: 0
             targetPort: targetPort
           status: available
       properties:
@@ -536,17 +590,17 @@ components:
     ServicePortItem:
       example:
         protocol: protocol
-        port: 6.027456183070403
+        port: 6
         name: name
-        nodePort: 0.8008281904610115
+        nodePort: 0
         targetPort: targetPort
       properties:
         name:
           type: string
         nodePort:
-          type: number
+          type: integer
         port:
-          type: number
+          type: integer
         protocol:
           type: string
         targetPort:
@@ -583,4 +637,13 @@ components:
       required:
       - name
       - namespace
+      type: object
+    inline_object:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        openapi:
+          type: string
       type: object
