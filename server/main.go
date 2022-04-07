@@ -59,7 +59,7 @@ func main() {
 	)
 
 	log.Printf("Server started :8080")
-	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
 }
 
 var headersOk = handlers.AllowedHeaders([]string{
