@@ -13,9 +13,9 @@ type ServicePortItem struct {
 
 	Name string `json:"name"`
 
-	NodePort float32 `json:"nodePort"`
+	NodePort int32 `json:"nodePort"`
 
-	Port float32 `json:"port"`
+	Port int32 `json:"port"`
 
 	Protocol string `json:"protocol"`
 

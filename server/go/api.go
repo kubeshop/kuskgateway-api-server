@@ -18,6 +18,7 @@ import (
 // The ApisApiRouter implementation should parse necessary information from the http request,
 // pass the data to a ApisApiServicer to perform the required actions, then write the service results to the http response.
 type ApisApiRouter interface {
+	DeployApi(http.ResponseWriter, *http.Request)
 	GetApi(http.ResponseWriter, *http.Request)
 	GetApiCRD(http.ResponseWriter, *http.Request)
 	GetApiDefinition(http.ResponseWriter, *http.Request)
@@ -55,6 +56,7 @@ type StaticRoutesApiRouter interface {
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type ApisApiServicer interface {
+	DeployApi(context.Context, APIPayload) (ImplResponse, error)
 	GetApi(context.Context, string, string) (ImplResponse, error)
 	GetApiCRD(context.Context, string, string) (ImplResponse, error)
 	GetApiDefinition(context.Context, string, string) (ImplResponse, error)

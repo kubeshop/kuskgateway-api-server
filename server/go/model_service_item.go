@@ -17,7 +17,7 @@ type ServiceItem struct {
 
 	Namespace string `json:"namespace"`
 
-	Ports ServicePortItem `json:"ports"`
+	Ports []ServicePortItem `json:"ports"`
 }
 
 // AssertServiceItemRequired checks if the required fields are not zero-ed
@@ -34,8 +34,10 @@ func AssertServiceItemRequired(obj ServiceItem) error {
 		}
 	}
 
-	if err := AssertServicePortItemRequired(obj.Ports); err != nil {
-		return err
+	for _, el := range obj.Ports {
+		if err := AssertServicePortItemRequired(el); err != nil {
+			return err
+		}
 	}
 	return nil
 }
