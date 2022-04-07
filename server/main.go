@@ -16,6 +16,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/gorilla/handlers"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -59,8 +60,29 @@ func main() {
 		ProbeController,
 	)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
 }
+
+var headersOk = handlers.AllowedHeaders([]string{
+	"Accept",
+	"Content-Language",
+	"Origin",
+	"Content-Type",
+	"Content-Length",
+	"Accept-Encoding",
+	"Authorization",
+	"X-CSRF-Token",
+	"Access-Control-Request-Method",
+	"Access-Control-Request-Headers",
+	"Access-Control-Allow-Origin",
+	"Access-Control-Expose-Headers",
+	"Access-Control-Max-Age",
+	"Access-Control-Allow-Methods",
+	"Access-Control-Allow-Headers",
+	"Access-Control-Allow-Credentials"})
+
+var methodsOk = handlers.AllowedMethods([]string{"OPTIONS", "GET", "POST", "PUT"})
+var originsOk = handlers.AllowedOrigins([]string{"*"})
 
 func getConfig() (*rest.Config, error) {
 	var err error
