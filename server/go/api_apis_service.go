@@ -8,3 +8,20 @@
  */
 
 package openapi
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
+
+// DeployApi - Deploy new API
+func (s *ApisApiService) DeployApi(ctx context.Context, payload APIPayload) (ImplResponse, error) {
+	fmt.Println("payload", payload)
+	api, err := s.kuskClient.CreateApi(payload.Name, payload.Namespace, payload.Openapi)
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+
+	return Response(http.StatusOK, api), nil
+}

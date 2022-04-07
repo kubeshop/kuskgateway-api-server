@@ -1,5 +1,3 @@
-Dockerfile
-README.md
 api/openapi.yaml
 go.mod
 go/api.go
@@ -18,6 +16,7 @@ go/model_api_item.go
 go/model_api_item_fleet.go
 go/model_api_item_service.go
 go/model_envoy_fleet_item.go
+go/model_inline_object.go
 go/model_service_item.go
 go/model_service_port_item.go
 go/model_static_route_item.go

@@ -69,6 +69,13 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                openapi:
+                  type: string
       responses:
         201:
           description: "API deployed"

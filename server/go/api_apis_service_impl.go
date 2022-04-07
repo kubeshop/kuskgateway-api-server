@@ -44,7 +44,7 @@ func (s *ApisApiService) GetApis(ctx context.Context, namespace string, fleetnam
 		}
 
 	} else {
-		apis, err = s.kuskClient.GetApiByEnvoyFleet(fleetnamespace, fleetname)
+		apis, err = s.kuskClient.GetApiByEnvoyFleet(namespace, fleetnamespace, fleetname)
 		if err != nil {
 			return Response(http.StatusInternalServerError, err), err
 		}

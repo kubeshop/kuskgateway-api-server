@@ -10,6 +10,7 @@
 package openapi
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -50,6 +51,12 @@ func NewApisApiController(s ApisApiServicer, opts ...ApisApiOption) Router {
 func (c *ApisApiController) Routes() Routes {
 	return Routes{
 		{
+			"DeployApi",
+			strings.ToUpper("Post"),
+			"/apis",
+			c.DeployApi,
+		},
+		{
 			"GetApi",
 			strings.ToUpper("Get"),
 			"/apis/{namespace}/{name}",
@@ -74,6 +81,30 @@ func (c *ApisApiController) Routes() Routes {
 			c.GetApis,
 		},
 	}
+}
+
+// DeployApi - Deploy new API
+func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
+	inlineObjectParam := APIPayload{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&inlineObjectParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertInlineObjectRequired(inlineObjectParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.DeployApi(r.Context(), inlineObjectParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
 }
 
 // GetApi - Get an API instance by namespace and name
