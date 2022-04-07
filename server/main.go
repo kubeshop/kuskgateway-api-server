@@ -29,8 +29,6 @@ import (
 )
 
 func main() {
-	log.Printf("Server started")
-
 	k8sClient, err := getClient()
 	if err != nil {
 		log.Fatalf(fmt.Errorf("unable to get kubernetes client: %w", err).Error())
@@ -60,7 +58,8 @@ func main() {
 		ProbeController,
 	)
 
-	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
+	log.Printf("Server started :8080")
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
 }
 
 var headersOk = handlers.AllowedHeaders([]string{
