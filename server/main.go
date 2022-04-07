@@ -62,26 +62,28 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, methodsOk, originsOk)(router)))
 }
 
-var headersOk = handlers.AllowedHeaders([]string{
-	"Accept",
-	"Content-Language",
-	"Origin",
-	"Content-Type",
-	"Content-Length",
-	"Accept-Encoding",
-	"Authorization",
-	"X-CSRF-Token",
-	"Access-Control-Request-Method",
-	"Access-Control-Request-Headers",
-	"Access-Control-Allow-Origin",
-	"Access-Control-Expose-Headers",
-	"Access-Control-Max-Age",
-	"Access-Control-Allow-Methods",
-	"Access-Control-Allow-Headers",
-	"Access-Control-Allow-Credentials"})
+var (
+	headersOk = handlers.AllowedHeaders([]string{
+		"Accept",
+		"Content-Language",
+		"Origin",
+		"Content-Type",
+		"Content-Length",
+		"Accept-Encoding",
+		"Authorization",
+		"X-CSRF-Token",
+		"Access-Control-Request-Method",
+		"Access-Control-Request-Headers",
+		"Access-Control-Allow-Origin",
+		"Access-Control-Expose-Headers",
+		"Access-Control-Max-Age",
+		"Access-Control-Allow-Methods",
+		"Access-Control-Allow-Headers",
+		"Access-Control-Allow-Credentials"})
 
-var methodsOk = handlers.AllowedMethods([]string{"OPTIONS", "GET", "POST", "PUT"})
-var originsOk = handlers.AllowedOrigins([]string{"*"})
+	methodsOk = handlers.AllowedMethods([]string{"OPTIONS", "GET", "POST", "PUT"})
+	originsOk = handlers.AllowedOrigins([]string{"*"})
+)
 
 func getConfig() (*rest.Config, error) {
 	var err error
