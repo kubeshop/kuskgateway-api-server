@@ -18,7 +18,7 @@ import (
 	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // ApisApiService is a service that implements the logic for the ApisApiServicer
@@ -120,6 +120,8 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 		return apiItem
 	}
 
+	apiItem.Version = getApiVersion(api.Spec.Spec)
+
 	apiItem.Service = ApiItemService{
 		Name:      opts.Upstream.Service.Name,
 		Namespace: opts.Upstream.Service.Namespace,
@@ -130,4 +132,17 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 	}
 
 	return apiItem
+}
+
+func getApiVersion(apiSpec string) string {
+	var yml map[string]interface{}
+	yaml.Unmarshal([]byte(apiSpec), &yml)
+
+	for k, v := range yml {
+		if k == "info" {
+			ss := v.(map[string]interface{})
+			return ss["version"].(string)
+		}
+	}
+	return ""
 }
