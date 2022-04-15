@@ -74,16 +74,19 @@ func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) 
 			return Response(http.StatusInternalServerError, nil), err
 		}
 
-		_, err = s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
-		status := "available"
-		if err != nil {
-			status = "unavailable"
+		if opts.Upstream != nil {
+			_, err = s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
+			status := "available"
+			if err != nil {
+				status = "unavailable"
+			}
+
+			services = append(services, ServiceItem{
+				Name:      opts.Upstream.Service.Name,
+				Namespace: opts.Upstream.Service.Namespace,
+				Status:    status,
+			})
 		}
-		services = append(services, ServiceItem{
-			Name:      opts.Upstream.Service.Name,
-			Namespace: opts.Upstream.Service.Namespace,
-			Status:    status,
-		})
 	}
 	return Response(http.StatusOK, services), nil
 }
