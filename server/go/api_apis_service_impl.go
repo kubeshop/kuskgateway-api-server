@@ -35,14 +35,14 @@ func NewApisApiService(kuskClient kusk.Client) ApisApiServicer {
 
 // GetApis - Get a list of APIs
 func (s *ApisApiService) GetApis(ctx context.Context, namespace string, fleetname string, fleetnamespace string) (ImplResponse, error) {
-	apis := &kuskv1.APIList{}
+	var apis *kuskv1.APIList
 	var err error
+
 	if fleetname == "" {
 		apis, err = s.kuskClient.GetApis(namespace)
 		if err != nil {
 			return Response(http.StatusInternalServerError, err), err
 		}
-
 	} else {
 		apis, err = s.kuskClient.GetApiByEnvoyFleet(namespace, fleetnamespace, fleetname)
 		if err != nil {
@@ -122,9 +122,11 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 
 	apiItem.Version = getApiVersion(api.Spec.Spec)
 
-	apiItem.Service = ApiItemService{
-		Name:      opts.Upstream.Service.Name,
-		Namespace: opts.Upstream.Service.Namespace,
+	if opts.Upstream != nil {
+		apiItem.Service = ApiItemService{
+			Name:      opts.Upstream.Service.Name,
+			Namespace: opts.Upstream.Service.Namespace,
+		}
 	}
 	apiItem.Fleet = ApiItemFleet{
 		Name:      api.Spec.Fleet.Name,
@@ -132,6 +134,16 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 	}
 
 	return apiItem
+}
+
+// DeployApi - Deploy new API
+func (s *ApisApiService) DeployApi(ctx context.Context, payload APIPayload) (ImplResponse, error) {
+	api, err := s.kuskClient.CreateApi(payload.Name, payload.Namespace, payload.Openapi)
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+
+	return Response(http.StatusOK, s.convertAPICRDtoAPIModel(api)), nil
 }
 
 func getApiVersion(apiSpec string) string {
