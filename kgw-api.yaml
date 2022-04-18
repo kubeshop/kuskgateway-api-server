@@ -36,9 +36,3 @@ spec:
   type: LoadBalancer
   selector:
     app: kgwtest
-# ---
-# apiVersion: v1
-# kind: ServiceAccount
-# metadata:
-#   name: kuskgateway-api
-#   namespace: kusk-system

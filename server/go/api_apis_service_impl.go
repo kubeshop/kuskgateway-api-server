@@ -122,12 +122,13 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 
 	apiItem.Version = getApiVersion(api.Spec.Spec)
 
-	if opts.Upstream != nil {
+	if opts.Upstream != nil && opts.Upstream.Service != nil {
 		apiItem.Service = ApiItemService{
 			Name:      opts.Upstream.Service.Name,
 			Namespace: opts.Upstream.Service.Namespace,
 		}
 	}
+
 	apiItem.Fleet = ApiItemFleet{
 		Name:      api.Spec.Fleet.Name,
 		Namespace: api.Spec.Fleet.Namespace,
