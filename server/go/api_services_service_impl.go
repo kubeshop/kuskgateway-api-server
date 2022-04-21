@@ -75,16 +75,25 @@ func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) 
 		}
 
 		if opts.Upstream != nil && opts.Upstream.Service != nil {
-			_, err = s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
+			svc, err := s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
 			status := "available"
 			if err != nil {
 				status = "unavailable"
+			}
+
+			ports := []ServicePortItem{}
+			for _, port := range svc.Spec.Ports {
+				ports = append(ports, ServicePortItem{
+					Port:     port.Port,
+					Protocol: string(port.Protocol),
+				})
 			}
 
 			services = append(services, ServiceItem{
 				Name:      opts.Upstream.Service.Name,
 				Namespace: opts.Upstream.Service.Namespace,
 				Status:    status,
+				Ports:     ports,
 			})
 		}
 	}
