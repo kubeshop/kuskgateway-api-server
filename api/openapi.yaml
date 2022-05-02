@@ -4,10 +4,8 @@ info:
   title: Kusk Gateway API
   description: "This is the Kusk Gateway Management API"
 servers:
-  - url: http://localhost:4010
+  - url: http://localhost:8080/api
     description: "My local endpoint mockup"
-  - url: http://147.75.33.177:8080
-    description: "Testing endpoint"
 externalDocs:
   description: "Find out more about Kusk-Gateway"
   url: "https://kubeshop.github.io/kusk-gateway/"
