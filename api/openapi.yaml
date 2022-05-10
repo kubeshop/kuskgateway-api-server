@@ -316,6 +316,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/StaticRouteItem"
+    post:
+      tags:
+        - "create new static route"
+      summary: "create new static route"
+      operationId: createStaticRoute
+      requestBody:
+        description: "static route content"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaticRouteItem"
+      responses:
+        200:
+          description: "created static route"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/StaticRouteItem"
+        400:
+          description: "The content of the API is malformed"
+          content:
+            application/json:
+              schema:
+                type: string
   /staticroutes/{namespace}/{name}:
     get:
       tags:
