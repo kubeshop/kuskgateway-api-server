@@ -4,7 +4,7 @@ info:
   title: Kusk Gateway API
   description: "This is the Kusk Gateway Management API"
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:8080
     description: "My local endpoint mockup"
 externalDocs:
   description: "Find out more about Kusk-Gateway"

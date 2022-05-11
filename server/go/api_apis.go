@@ -85,7 +85,7 @@ func (c *ApisApiController) Routes() Routes {
 
 // DeployApi - Deploy new API
 func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
-	inlineObjectParam := APIPayload{}
+	inlineObjectParam := InlineObject{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
 	if err := d.Decode(&inlineObjectParam); err != nil {

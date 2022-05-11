@@ -138,8 +138,8 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 }
 
 // DeployApi - Deploy new API
-func (s *ApisApiService) DeployApi(ctx context.Context, payload APIPayload) (ImplResponse, error) {
-	api, err := s.kuskClient.CreateApi(payload.Name, payload.Namespace, payload.Openapi)
+func (s *ApisApiService) DeployApi(ctx context.Context, payload InlineObject) (ImplResponse, error) {
+	api, err := s.kuskClient.CreateApi(payload.Name, payload.Namespace, payload.Openapi, payload.EnvoyFleetName, payload.EnvoyFleetNamespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}

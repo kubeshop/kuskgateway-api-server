@@ -10,7 +10,6 @@
 package openapi
 
 type ServicePortItem struct {
-
 	Name string `json:"name"`
 
 	NodePort int32 `json:"nodePort"`
@@ -25,10 +24,10 @@ type ServicePortItem struct {
 // AssertServicePortItemRequired checks if the required fields are not zero-ed
 func AssertServicePortItemRequired(obj ServicePortItem) error {
 	elements := map[string]interface{}{
-		"name": obj.Name,
-		"nodePort": obj.NodePort,
-		"port": obj.Port,
-		"protocol": obj.Protocol,
+		"name":       obj.Name,
+		"nodePort":   obj.NodePort,
+		"port":       obj.Port,
+		"protocol":   obj.Protocol,
 		"targetPort": obj.TargetPort,
 	}
 	for name, el := range elements {

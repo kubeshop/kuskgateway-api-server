@@ -16,7 +16,7 @@ type Client interface {
 	GetApis(namespace string) (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error)
-	CreateApi(name, namespace, openapispec string) (*kuskv1.API, error)
+	CreateApi(name, namespace, openapispec, fleetName, fleetnamespace string) (*kuskv1.API, error)
 
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
@@ -90,7 +90,7 @@ func (k *kuskClient) GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName str
 	return &kuskv1.APIList{Items: toReturn}, nil
 }
 
-func (k *kuskClient) CreateApi(name, namespace, openapispec string) (*kuskv1.API, error) {
+func (k *kuskClient) CreateApi(name, namespace, openapispec string, fleetName string, fleetnamespace string) (*kuskv1.API, error) {
 	api := &kuskv1.API{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,
@@ -98,6 +98,10 @@ func (k *kuskClient) CreateApi(name, namespace, openapispec string) (*kuskv1.API
 		},
 		Spec: kuskv1.APISpec{
 			Spec: openapispec,
+			Fleet: &kuskv1.EnvoyFleetID{
+				Name:      fleetName,
+				Namespace: fleetnamespace,
+			},
 		},
 	}
 	if err := k.client.Create(context.TODO(), api, &client.CreateOptions{}); err != nil {

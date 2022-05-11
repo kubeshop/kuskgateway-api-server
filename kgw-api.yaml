@@ -17,7 +17,7 @@ spec:
         app: kgwtest
     spec:
       containers:
-        - image: jasmingacic/kuskgateway-api:latest
+        - image: jasmingacic/kusk-gateway-api:latest
           imagePullPolicy: Always
           name: kuskgateway-api
       serviceAccountName: kusk-gateway-manager
