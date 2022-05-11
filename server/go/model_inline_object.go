@@ -14,6 +14,10 @@ type APIPayload struct {
 
 	Namespace string `json:"namespace,omitempty"`
 
+	EnvoyFleetName string `json:"envoyFleetName,omitempty"`
+
+	EnvoyFleetNamespace string `json:"envoyFleetNamespace,omitempty"`
+
 	Openapi string `json:"openapi,omitempty"`
 }
 

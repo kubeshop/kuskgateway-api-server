@@ -52,19 +52,19 @@ func (c *FleetsApiController) Routes() Routes {
 		{
 			"GetEnvoyFleet",
 			strings.ToUpper("Get"),
-			"/fleets/{namespace}/{name}",
+			"/api/fleets/{namespace}/{name}",
 			c.GetEnvoyFleet,
 		},
 		{
 			"GetEnvoyFleetCRD",
 			strings.ToUpper("Get"),
-			"/fleets/{namespace}/{name}/crd",
+			"/api/fleets/{namespace}/{name}/crd",
 			c.GetEnvoyFleetCRD,
 		},
 		{
 			"GetEnvoyFleets",
 			strings.ToUpper("Get"),
-			"/fleets",
+			"/api/fleets",
 			c.GetEnvoyFleets,
 		},
 	}

@@ -52,13 +52,13 @@ func (c *ServicesApiController) Routes() Routes {
 		{
 			"GetService",
 			strings.ToUpper("Get"),
-			"/services/{namespace}/{name}",
+			"/api/services/{namespace}/{name}",
 			c.GetService,
 		},
 		{
 			"GetServices",
 			strings.ToUpper("Get"),
-			"/services",
+			"/api/services",
 			c.GetServices,
 		},
 	}

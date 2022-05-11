@@ -53,31 +53,31 @@ func (c *ApisApiController) Routes() Routes {
 		{
 			"DeployApi",
 			strings.ToUpper("Post"),
-			"/apis",
+			"/api/apis",
 			c.DeployApi,
 		},
 		{
 			"GetApi",
 			strings.ToUpper("Get"),
-			"/apis/{namespace}/{name}",
+			"/api/apis/{namespace}/{name}",
 			c.GetApi,
 		},
 		{
 			"GetApiCRD",
 			strings.ToUpper("Get"),
-			"/apis/{namespace}/{name}/crd",
+			"/api/apis/{namespace}/{name}/crd",
 			c.GetApiCRD,
 		},
 		{
 			"GetApiDefinition",
 			strings.ToUpper("Get"),
-			"/apis/{namespace}/{name}/definition",
+			"/api/apis/{namespace}/{name}/definition",
 			c.GetApiDefinition,
 		},
 		{
 			"GetApis",
 			strings.ToUpper("Get"),
-			"/apis",
+			"/api/apis",
 			c.GetApis,
 		},
 	}

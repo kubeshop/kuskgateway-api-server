@@ -3,6 +3,8 @@ go.mod
 go/api.go
 go/api_apis.go
 go/api_apis_service.go
+go/api_create_new_static_route.go
+go/api_create_new_static_route_service.go
 go/api_fleets.go
 go/api_services.go
 go/api_services_service.go

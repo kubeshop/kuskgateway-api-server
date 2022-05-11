@@ -52,19 +52,19 @@ func (c *StaticRoutesApiController) Routes() Routes {
 		{
 			"GetStaticRoute",
 			strings.ToUpper("Get"),
-			"/staticroutes/{namespace}/{name}",
+			"/api/staticroutes/{namespace}/{name}",
 			c.GetStaticRoute,
 		},
 		{
 			"GetStaticRouteCRD",
 			strings.ToUpper("Get"),
-			"/staticroutes/{namespace}/{name}/crd",
+			"/api/staticroutes/{namespace}/{name}/crd",
 			c.GetStaticRouteCRD,
 		},
 		{
 			"GetStaticRoutes",
 			strings.ToUpper("Get"),
-			"/staticroutes",
+			"/api/staticroutes",
 			c.GetStaticRoutes,
 		},
 	}
