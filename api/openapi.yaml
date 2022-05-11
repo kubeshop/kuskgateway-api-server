@@ -72,6 +72,10 @@ paths:
                   type: string
                 namespace:
                   type: string
+                envoyFleetName:
+                  type: string
+                envoyFleetNamespace:
+                  type: string
                 openapi:
                   type: string
       responses:
