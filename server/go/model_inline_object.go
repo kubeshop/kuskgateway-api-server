@@ -9,7 +9,8 @@
 
 package openapi
 
-type APIPayload struct {
+type InlineObject struct {
+
 	Name string `json:"name,omitempty"`
 
 	Namespace string `json:"namespace,omitempty"`
@@ -22,7 +23,7 @@ type APIPayload struct {
 }
 
 // AssertInlineObjectRequired checks if the required fields are not zero-ed
-func AssertInlineObjectRequired(obj APIPayload) error {
+func AssertInlineObjectRequired(obj InlineObject) error {
 	return nil
 }
 
@@ -30,7 +31,7 @@ func AssertInlineObjectRequired(obj APIPayload) error {
 // Accepts only nested slice of InlineObject (e.g. [][]InlineObject), otherwise ErrTypeAssertionError is thrown.
 func AssertRecurseInlineObjectRequired(objSlice interface{}) error {
 	return AssertRecurseInterfaceRequired(objSlice, func(obj interface{}) error {
-		aInlineObject, ok := obj.(APIPayload)
+		aInlineObject, ok := obj.(InlineObject)
 		if !ok {
 			return ErrTypeAssertionError
 		}
