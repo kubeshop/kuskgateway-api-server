@@ -155,6 +155,7 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 	if err := k.client.Create(context.TODO(), staticRoute, &client.CreateOptions{}); err != nil {
 		return nil, err
 	}
+
 	return staticRoute, nil
 }
 
