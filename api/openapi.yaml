@@ -331,16 +331,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                namespace:
-                  type: string
-                envoyFleetName:
-                  type: string
-                envoyFleetNamespace:
-                  type: string
+              $ref: "#/components/schemas/StaticRouteItem"
       responses:
         200:
           description: "created static route"
@@ -500,6 +491,10 @@ components:
         name:
           type: string
         namespace:
+          type: string
+        envoyFleetName:
+          type: string
+        envoyFleetNamespace:
           type: string
     ApiItem_Fleet:
       type: object
