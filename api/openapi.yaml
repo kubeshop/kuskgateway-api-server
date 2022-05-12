@@ -331,7 +331,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/StaticRouteItem"
+              type: object
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                envoyFleetName:
+                  type: string
+                envoyFleetNamespace:
+                  type: string
       responses:
         200:
           description: "created static route"
