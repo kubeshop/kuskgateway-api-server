@@ -9,5 +9,6 @@ run:
 
 run-minikube:
 	docker-compose -f docker-compose.yaml -f docker-compose-minikube.yaml up --build --force-recreate
-test: 
+
+test:
 	cd ./server && FAKE=true go test -v ./...
