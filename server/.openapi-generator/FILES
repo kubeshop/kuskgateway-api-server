@@ -6,6 +6,8 @@ go/api_apis_service.go
 go/api_create_new_static_route.go
 go/api_create_new_static_route_service.go
 go/api_fleets.go
+go/api_namespaces.go
+go/api_namespaces_service.go
 go/api_services.go
 go/api_services_service.go
 go/api_static_routes.go
@@ -19,6 +21,7 @@ go/model_api_item_fleet.go
 go/model_api_item_service.go
 go/model_envoy_fleet_item.go
 go/model_inline_object.go
+go/model_namespace_item.go
 go/model_service_item.go
 go/model_service_port_item.go
 go/model_static_route_item.go

@@ -50,12 +50,16 @@ func main() {
 
 	ProbeController := openapi.NewProbeController()
 
+	NamespacesApiService := openapi.NewNamespacesApiService(kuskClient)
+	NamespaceApiController := openapi.NewNamespacesApiController(NamespacesApiService)
+
 	router := openapi.NewRouter(
 		ApisApiController,
 		FleetsApiController,
 		ServicesApiController,
 		StaticRouteApiController,
 		ProbeController,
+		NamespaceApiController,
 	)
 
 	log.Printf("Server started :8080")

@@ -22,6 +22,7 @@ type Client interface {
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
+	ListNamespaces() (*corev1.NamespaceList, error)
 }
 
 type kuskClient struct {
@@ -134,5 +135,13 @@ func (k *kuskClient) GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList,
 		return nil, err
 	}
 
+	return list, nil
+}
+
+func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {
+	list := &corev1.NamespaceList{}
+	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
+		return nil, err
+	}
 	return list, nil
 }

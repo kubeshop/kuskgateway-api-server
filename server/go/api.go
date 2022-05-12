@@ -41,6 +41,13 @@ type FleetsApiRouter interface {
 	GetEnvoyFleets(http.ResponseWriter, *http.Request)
 }
 
+// NamespacesApiRouter defines the required methods for binding the api requests to a responses for the NamespacesApi
+// The NamespacesApiRouter implementation should parse necessary information from the http request,
+// pass the data to a NamespacesApiServicer to perform the required actions, then write the service results to the http response.
+type NamespacesApiRouter interface {
+	GetNamespaces(http.ResponseWriter, *http.Request)
+}
+
 // ServicesApiRouter defines the required methods for binding the api requests to a responses for the ServicesApi
 // The ServicesApiRouter implementation should parse necessary information from the http request,
 // pass the data to a ServicesApiServicer to perform the required actions, then write the service results to the http response.
@@ -86,6 +93,14 @@ type FleetsApiServicer interface {
 	GetEnvoyFleet(context.Context, string, string) (ImplResponse, error)
 	GetEnvoyFleetCRD(context.Context, string, string) (ImplResponse, error)
 	GetEnvoyFleets(context.Context, string) (ImplResponse, error)
+}
+
+// NamespacesApiServicer defines the api actions for the NamespacesApi service
+// This interface intended to stay up to date with the openapi yaml used to generate it,
+// while the service implementation can ignored with the .openapi-generator-ignore file
+// and updated with the logic required for the API.
+type NamespacesApiServicer interface {
+	GetNamespaces(context.Context) (ImplResponse, error)
 }
 
 // ServicesApiServicer defines the api actions for the ServicesApi service
