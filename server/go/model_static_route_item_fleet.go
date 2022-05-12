@@ -10,6 +10,7 @@
 package openapi
 
 type StaticRouteItemFleet struct {
+
 	Name string `json:"name"`
 
 	Namespace string `json:"namespace"`
@@ -18,7 +19,7 @@ type StaticRouteItemFleet struct {
 // AssertStaticRouteItemFleetRequired checks if the required fields are not zero-ed
 func AssertStaticRouteItemFleetRequired(obj StaticRouteItemFleet) error {
 	elements := map[string]interface{}{
-		"name":      obj.Name,
+		"name": obj.Name,
 		"namespace": obj.Namespace,
 	}
 	for name, el := range elements {

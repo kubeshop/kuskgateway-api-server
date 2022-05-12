@@ -10,6 +10,7 @@
 package openapi
 
 type InlineObject struct {
+
 	Name string `json:"name,omitempty"`
 
 	Namespace string `json:"namespace,omitempty"`

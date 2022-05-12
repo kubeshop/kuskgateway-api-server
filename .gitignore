@@ -16,3 +16,4 @@
 
 kubeconfig
 server/api/
+.vscode/

@@ -45,8 +45,8 @@ func main() {
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
 	ServicesApiController := openapi.NewServicesApiController(ServicesApiService)
 
-	StaticRouteApiService := openapi.NewStaticRoutesApiService(kuskClient)
-	StaticRouteApiController := openapi.NewStaticRoutesApiController(StaticRouteApiService)
+	StaticRouteApiService := openapi.NewCreateNewStaticRouteApiService(kuskClient)
+	StaticRouteApiController := openapi.NewCreateNewStaticRouteApiController(StaticRouteApiService)
 
 	ProbeController := openapi.NewProbeController()
 

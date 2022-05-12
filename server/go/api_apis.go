@@ -19,7 +19,7 @@ import (
 
 // ApisApiController binds http requests to an api service and writes the service results to the http response
 type ApisApiController struct {
-	service      ApisApiServicer
+	service ApisApiServicer
 	errorHandler ErrorHandler
 }
 
@@ -49,7 +49,7 @@ func NewApisApiController(s ApisApiServicer, opts ...ApisApiOption) Router {
 
 // Routes returns all of the api route for the ApisApiController
 func (c *ApisApiController) Routes() Routes {
-	return Routes{
+	return Routes{ 
 		{
 			"DeployApi",
 			strings.ToUpper("Post"),
@@ -111,9 +111,9 @@ func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
 func (c *ApisApiController) GetApi(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	namespaceParam := params["namespace"]
-
+	
 	nameParam := params["name"]
-
+	
 	result, err := c.service.GetApi(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -129,9 +129,9 @@ func (c *ApisApiController) GetApi(w http.ResponseWriter, r *http.Request) {
 func (c *ApisApiController) GetApiCRD(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	namespaceParam := params["namespace"]
-
+	
 	nameParam := params["name"]
-
+	
 	result, err := c.service.GetApiCRD(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -147,9 +147,9 @@ func (c *ApisApiController) GetApiCRD(w http.ResponseWriter, r *http.Request) {
 func (c *ApisApiController) GetApiDefinition(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	namespaceParam := params["namespace"]
-
+	
 	nameParam := params["name"]
-
+	
 	result, err := c.service.GetApiDefinition(r.Context(), namespaceParam, nameParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {

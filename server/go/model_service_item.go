@@ -10,6 +10,7 @@
 package openapi
 
 type ServiceItem struct {
+
 	Name string `json:"name"`
 
 	Status string `json:"status"`
@@ -22,10 +23,10 @@ type ServiceItem struct {
 // AssertServiceItemRequired checks if the required fields are not zero-ed
 func AssertServiceItemRequired(obj ServiceItem) error {
 	elements := map[string]interface{}{
-		"name":      obj.Name,
-		"status":    obj.Status,
+		"name": obj.Name,
+		"status": obj.Status,
 		"namespace": obj.Namespace,
-		"ports":     obj.Ports,
+		"ports": obj.Ports,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

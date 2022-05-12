@@ -22,7 +22,6 @@ var testClient Client
 
 func setup(tb testing.TB) {
 	if _, fakeIt := os.LookupEnv("FAKE"); fakeIt {
-
 		testClient = NewClient(getFakeClient())
 		return
 	}
