@@ -492,6 +492,10 @@ components:
           type: string
         namespace:
           type: string
+        envoyFleetName:
+          type: string
+        envoyFleetNamespace:
+          type: string
     ApiItem_Fleet:
       type: object
       required:
