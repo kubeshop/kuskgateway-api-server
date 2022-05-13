@@ -1,3 +1,6 @@
+.PHONY: all
+all: format test build
+
 build:
 	docker build -t kusk-gateway-api server
 
@@ -12,3 +15,7 @@ run-minikube:
 
 test:
 	cd ./server && FAKE=true go test -v -count=1 ./...
+
+.PHONY: format
+format:
+	cd ./server && go fmt ./...
