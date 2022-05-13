@@ -34,6 +34,12 @@ func (s *CreateNewStaticRouteApiService) CreateStaticRoute(ctx context.Context, 
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-	return Response(http.StatusOK, staticRoute), nil
 
+	toReturn := StaticRouteItem{
+		Name:                staticRoute.Name,
+		Namespace:           staticRoute.Namespace,
+		EnvoyFleetName:      staticRoute.Spec.Fleet.Name,
+		EnvoyFleetNamespace: staticRoute.Spec.Fleet.Namespace,
+	}
+	return Response(http.StatusOK, toReturn), nil
 }
