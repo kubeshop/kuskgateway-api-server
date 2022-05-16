@@ -20,6 +20,7 @@ type Client interface {
 
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
+	CreateStaticRoute(namespace, name, fleetName, fleetNamespace string) (*kuskv1.StaticRoute, error)
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
 	ListNamespaces() (*corev1.NamespaceList, error)
@@ -136,6 +137,26 @@ func (k *kuskClient) GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList,
 	}
 
 	return list, nil
+}
+
+func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespace string) (*kuskv1.StaticRoute, error) {
+	staticRoute := &kuskv1.StaticRoute{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: kuskv1.StaticRouteSpec{
+			Fleet: &kuskv1.EnvoyFleetID{
+				Name:      fleetName,
+				Namespace: fleetNamespace,
+			},
+		},
+	}
+	if err := k.client.Create(context.TODO(), staticRoute, &client.CreateOptions{}); err != nil {
+		return nil, err
+	}
+
+	return staticRoute, nil
 }
 
 func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {

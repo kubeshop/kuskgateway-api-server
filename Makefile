@@ -1,3 +1,6 @@
+.PHONY: all
+all: format test build
+
 build:
 	docker build -t kusk-gateway-api server
 
@@ -9,5 +12,10 @@ run:
 
 run-minikube:
 	docker-compose -f docker-compose.yaml -f docker-compose-minikube.yaml up --build --force-recreate
-test: 
-	cd ./server && FAKE=true go test -v ./...
+
+test:
+	cd ./server && FAKE=true go test -v -count=1 ./...
+
+.PHONY: format
+format:
+	cd ./server && go fmt ./...

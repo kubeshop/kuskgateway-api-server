@@ -16,3 +16,8 @@
 
 kubeconfig
 server/api/
+
+.vscode/
+
+.tmp/
+/.tmp/

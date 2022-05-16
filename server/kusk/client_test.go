@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -22,7 +22,6 @@ var testClient Client
 
 func setup(tb testing.TB) {
 	if _, fakeIt := os.LookupEnv("FAKE"); fakeIt {
-
 		testClient = NewClient(getFakeClient())
 		return
 	}
@@ -35,6 +34,7 @@ func setup(tb testing.TB) {
 
 	testClient = NewClient(k8sclient)
 }
+
 func TestClientGetEnvoyFleets(t *testing.T) {
 	setup(t)
 
@@ -107,11 +107,39 @@ func TestGetSvc(t *testing.T) {
 		t.Fail()
 		return
 	}
+}
 
+func TestCreateStaticRoute(t *testing.T) {
+	require := require.New(t)
+
+	setup(t)
+
+	namespace := "static-route-2"
+	name := "default"
+	fleetNamespace := "default"
+	fleetName := "/static-route-2"
+	staticRoute, err := testClient.CreateStaticRoute(namespace, name, fleetNamespace, fleetName)
+
+	require.NoError(err)
+	require.NotNil(staticRoute)
+
+	require.Equal(fleetNamespace+"."+fleetName, staticRoute.Spec.Fleet.String())
+}
+
+func TestGetStaticRoutes(t *testing.T) {
+	require := require.New(t)
+
+	setup(t)
+
+	namespace := "default"
+	staticRoutes, err := testClient.GetStaticRoutes(namespace)
+
+	require.NoError(err)
+	require.NotNil(staticRoutes)
+	require.Len(staticRoutes.Items, 1)
 }
 
 func getFakeClient() client.Client {
-
 	scheme := runtime.NewScheme()
 	kuskv1.AddToScheme(scheme)
 	corev1.AddToScheme(scheme)
@@ -133,6 +161,18 @@ func getFakeClient() client.Client {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "default",
 				Namespace: "default",
+			},
+		},
+		&kuskv1.StaticRoute{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "static-route-1",
+				Namespace: "default",
+			},
+			Spec: kuskv1.StaticRouteSpec{
+				Fleet: &kuskv1.EnvoyFleetID{
+					Name:      "/static-route-1",
+					Namespace: "default",
+				},
 			},
 		},
 	}

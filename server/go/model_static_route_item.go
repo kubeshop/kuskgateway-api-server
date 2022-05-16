@@ -13,6 +13,10 @@ type StaticRouteItem struct {
 	Name string `json:"name"`
 
 	Namespace string `json:"namespace"`
+
+	EnvoyFleetName string `json:"envoyFleetName,omitempty"`
+
+	EnvoyFleetNamespace string `json:"envoyFleetNamespace,omitempty"`
 }
 
 // AssertStaticRouteItemRequired checks if the required fields are not zero-ed
