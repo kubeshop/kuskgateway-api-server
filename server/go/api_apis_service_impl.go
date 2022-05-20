@@ -14,11 +14,12 @@ import (
 	"net/http"
 	"strings"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
-	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
 	"gopkg.in/yaml.v3"
+
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 )
 
 // ApisApiService is a service that implements the logic for the ApisApiServicer
