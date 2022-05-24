@@ -292,6 +292,28 @@ paths:
                 $ref: "#/components/schemas/EnvoyFleetItem"
         404:
           description: "Envoy fleet not found by namespace-name combination"
+    delete:
+      tags:
+        - "fleets"
+      summary: "Delete a Fleet instance by namespace and name"
+      operationId: deleteFleet
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: "fleet item deleted"
+        404:
+          description: "fleet item not found"
   /fleets/{namespace}/{name}/crd:
     get:
       tags:
@@ -409,6 +431,28 @@ paths:
                 $ref: "#/components/schemas/StaticRouteItem"
         404:
           description: "Static Route not found by namespace-name combination"
+    delete:
+      tags:
+        - "static Route"
+      summary: "Delete a StaticRoute by namespace and name"
+      operationId: deleteStaticRoute
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: "staticRoute item deleted"
+        404:
+          description: "staticRoute item not found"
   /staticroutes/{namespace}/{name}/crd:
     get:
       tags:
@@ -584,4 +628,3 @@ components:
       properties:
         name:
           type: string
-
