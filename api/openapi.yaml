@@ -263,6 +263,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/EnvoyFleetItem"
+    post:
+      tags:
+        - "create new fleet"
+      summary: "create new fleet"
+      operationId: createFleet
+      requestBody:
+        description: "create fleet content"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceItem"
+      responses:
+        200:
+          description: "created fleet"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/EnvoyFleetItem"
+        400:
+          description: "The content of the API is malformed"
+          content:
+            application/json:
+              schema:
+                type: string
   /fleets/{namespace}/{name}:
     get:
       tags:
@@ -523,6 +549,7 @@ components:
         - name
         - status
         - namespace
+        - serviceType
         - ports
       properties:
         name:
@@ -534,6 +561,11 @@ components:
             - unavailable
         namespace:
           type: string
+        serviceType:
+          type: string
+          enum:
+            - ClusterIP
+            - LoadBalancer
         ports:
           type: array
           items:
