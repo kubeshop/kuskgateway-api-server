@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
@@ -35,21 +36,46 @@ func setup(tb testing.TB) {
 	testClient = NewClient(k8sclient)
 }
 
+func TestCreateEnvoyFleet(t *testing.T) {
+	require := require.New(t)
+	setup(t)
+	fleet := v1alpha1.EnvoyFleet{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "default",
+		},
+		Spec: kuskv1.EnvoyFleetSpec{
+			Service: &kuskv1.ServiceConfig{
+				Type: corev1.ServiceTypeLoadBalancer,
+			},
+		},
+	}
+
+	_, err := testClient.CreateFleet(fleet)
+	require.NoError(err)
+}
+
+func TestDeleteFleet(t *testing.T) {
+	require := require.New(t)
+	setup(t)
+
+	fleet := v1alpha1.EnvoyFleet{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default",
+			Namespace: "default",
+		},
+	}
+
+	require.NoError(testClient.DeleteFleet(fleet))
+}
 func TestClientGetEnvoyFleets(t *testing.T) {
+	require := require.New(t)
 	setup(t)
 
 	fleets, err := testClient.GetEnvoyFleets()
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-		return
-	}
+	require.NoError(err)
 
-	if len(fleets.Items) == 0 {
-		t.Error("no data returned")
-		t.Fail()
-		return
-	}
+	require.NotEqual(len(fleets.Items), 0)
 }
 
 func TestClientGetEnvoyFleet(t *testing.T) {
@@ -99,6 +125,14 @@ func TestGetApi(t *testing.T) {
 	fmt.Println(api.Spec.Spec)
 }
 
+func TestDeleteAPI(t *testing.T) {
+	require := require.New(t)
+	setup(t)
+
+	err := testClient.DeleteAPI("default", "sample")
+	require.NoError(err)
+}
+
 func TestGetSvc(t *testing.T) {
 	setup(t)
 	_, err := testClient.GetSvc("default", "kubernetes")
@@ -137,6 +171,22 @@ func TestGetStaticRoutes(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(staticRoutes)
 	require.Len(staticRoutes.Items, 1)
+}
+
+func TestDeleteStaticRoute(t *testing.T) {
+	require := require.New(t)
+
+	setup(t)
+	name := "static-route-1"
+	namespace := "default"
+	err := testClient.DeleteStaticRoute(v1alpha1.StaticRoute{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+	})
+
+	require.NoError(err)
 }
 
 func getFakeClient() client.Client {

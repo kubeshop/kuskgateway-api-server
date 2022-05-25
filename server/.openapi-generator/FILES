@@ -3,6 +3,8 @@ go.mod
 go/api.go
 go/api_apis.go
 go/api_apis_service.go
+go/api_create_new_fleet.go
+go/api_create_new_fleet_service.go
 go/api_create_new_static_route.go
 go/api_create_new_static_route_service.go
 go/api_fleets.go
@@ -10,6 +12,8 @@ go/api_namespaces.go
 go/api_namespaces_service.go
 go/api_services.go
 go/api_services_service.go
+go/api_static_route.go
+go/api_static_route_service.go
 go/api_static_routes.go
 go/api_static_routes_service.go
 go/error.go
@@ -21,6 +25,7 @@ go/model_api_item_fleet.go
 go/model_api_item_service.go
 go/model_envoy_fleet_item.go
 go/model_inline_object.go
+go/model_inline_object_1.go
 go/model_namespace_item.go
 go/model_service_item.go
 go/model_service_port_item.go

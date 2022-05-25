@@ -51,6 +51,12 @@ func NewApisApiController(s ApisApiServicer, opts ...ApisApiOption) Router {
 func (c *ApisApiController) Routes() Routes {
 	return Routes{
 		{
+			"DeleteApi",
+			strings.ToUpper("Delete"),
+			"/apis/{namespace}/{name}",
+			c.DeleteApi,
+		},
+		{
 			"DeployApi",
 			strings.ToUpper("Post"),
 			"/apis",
@@ -81,6 +87,24 @@ func (c *ApisApiController) Routes() Routes {
 			c.GetApis,
 		},
 	}
+}
+
+// DeleteApi - Delete an API instance by namespace and name
+func (c *ApisApiController) DeleteApi(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	result, err := c.service.DeleteApi(r.Context(), namespaceParam, nameParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
 }
 
 // DeployApi - Deploy new API

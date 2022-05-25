@@ -17,6 +17,7 @@ import (
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // FleetsApiService is a service that implements the logic for the FleetsApiServicer
@@ -31,6 +32,18 @@ func NewFleetsApiService(kuskClient kusk.Client) FleetsApiServicer {
 	return &FleetsApiService{
 		kuskClient: kuskClient,
 	}
+}
+
+func (s *FleetsApiService) DeleteFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	if err := s.kuskClient.DeleteFleet(v1alpha1.EnvoyFleet{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+	}); err != nil {
+		return Response(http.StatusInternalServerError, err), err
+	}
+	return Response(http.StatusOK, nil), nil
 }
 
 // GetEnvoyFleet - Get details for a single envoy fleet

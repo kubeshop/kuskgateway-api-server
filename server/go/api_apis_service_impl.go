@@ -11,6 +11,7 @@ package openapi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -139,7 +140,7 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 
 // DeployApi - Deploy new API
 func (s *ApisApiService) DeployApi(ctx context.Context, payload InlineObject) (ImplResponse, error) {
-	api, err := s.kuskClient.CreateApi(payload.Name, payload.Namespace, payload.Openapi, payload.EnvoyFleetName, payload.EnvoyFleetNamespace)
+	api, err := s.kuskClient.CreateApi(payload.Namespace, payload.Name, payload.Openapi, payload.EnvoyFleetName, payload.EnvoyFleetNamespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
@@ -158,4 +159,13 @@ func getApiVersion(apiSpec string) string {
 		}
 	}
 	return ""
+}
+
+// DeleteApi - Delete an API instance by namespace and name
+func (s *ApisApiService) DeleteApi(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	if err := s.kuskClient.DeleteAPI(namespace, name); err != nil {
+		return Response(http.StatusInternalServerError, err), errors.New("DeleteApi method failed")
+
+	}
+	return Response(http.StatusOK, nil), nil
 }

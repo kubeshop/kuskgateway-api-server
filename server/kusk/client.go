@@ -3,6 +3,7 @@ package k8sclient
 import (
 	"context"
 
+	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,15 +13,19 @@ import (
 type Client interface {
 	GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error)
 	GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, error)
+	CreateFleet(kuskv1.EnvoyFleet) (*kuskv1.EnvoyFleet, error)
+	DeleteFleet(kuskv1.EnvoyFleet) error
 
 	GetApis(namespace string) (*kuskv1.APIList, error)
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error)
-	CreateApi(name, namespace, openapispec, fleetName, fleetnamespace string) (*kuskv1.API, error)
+	CreateApi(namespace, name, openapispec, fleetName, fleetnamespace string) (*kuskv1.API, error)
+	DeleteAPI(namespace, name string) error
 
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 	CreateStaticRoute(namespace, name, fleetName, fleetNamespace string) (*kuskv1.StaticRoute, error)
+	DeleteStaticRoute(kuskv1.StaticRoute) error
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
 	ListNamespaces() (*corev1.NamespaceList, error)
@@ -54,6 +59,18 @@ func (k *kuskClient) GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, 
 		return nil, err
 	}
 	return envoy, nil
+}
+
+func (k *kuskClient) CreateFleet(fleet kuskv1.EnvoyFleet) (*kuskv1.EnvoyFleet, error) {
+	if err := k.client.Create(context.TODO(), &fleet, &client.CreateOptions{}); err != nil {
+		return nil, err
+	}
+
+	return &fleet, nil
+}
+
+func (k *kuskClient) DeleteFleet(fleet kuskv1.EnvoyFleet) error {
+	return k.client.Delete(context.TODO(), &fleet, &client.DeleteOptions{})
 }
 
 func (k *kuskClient) GetApis(namespace string) (*kuskv1.APIList, error) {
@@ -92,7 +109,7 @@ func (k *kuskClient) GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName str
 	return &kuskv1.APIList{Items: toReturn}, nil
 }
 
-func (k *kuskClient) CreateApi(name, namespace, openapispec string, fleetName string, fleetnamespace string) (*kuskv1.API, error) {
+func (k *kuskClient) CreateApi(namespace, name, openapispec string, fleetName string, fleetnamespace string) (*kuskv1.API, error) {
 	api := &kuskv1.API{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,
@@ -110,6 +127,16 @@ func (k *kuskClient) CreateApi(name, namespace, openapispec string, fleetName st
 		return nil, err
 	}
 	return api, nil
+}
+
+func (k *kuskClient) DeleteAPI(namespace, name string) error {
+	api := &kuskv1.API{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+	}
+	return k.client.Delete(context.TODO(), api, &client.DeleteOptions{})
 }
 
 func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
@@ -157,6 +184,10 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 	}
 
 	return staticRoute, nil
+}
+
+func (k *kuskClient) DeleteStaticRoute(sroute v1alpha1.StaticRoute) error {
+	return k.client.Delete(context.TODO(), &sroute, &client.DeleteOptions{})
 }
 
 func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {
