@@ -252,17 +252,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                namespace:
-                  type: string
-                serviceType:
-                  type: string
-                  enum:
-                    - ClusterIP
-                    - LoadBalancer
+              $ref: "#/components/schemas/ServiceItem"
       responses:
         200:
           description: "created fleet"
@@ -493,6 +483,7 @@ components:
         - name
         - status
         - namespace
+        - serviceType
         - ports
       properties:
         name:
@@ -504,6 +495,11 @@ components:
             - unavailable
         namespace:
           type: string
+        serviceType:
+          type: string
+          enum:
+            - ClusterIP
+            - LoadBalancer
         ports:
           type: array
           items:
