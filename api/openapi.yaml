@@ -258,8 +258,11 @@ paths:
                   type: string
                 namespace:
                   type: string
-                openapi:
+                serviceType:
                   type: string
+                  enum:
+                    - ClusterIP
+                    - LoadBalancer
       responses:
         200:
           description: "created fleet"
