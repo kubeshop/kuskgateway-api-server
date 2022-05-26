@@ -93,7 +93,7 @@ var (
 		"Access-Control-Allow-Headers",
 		"Access-Control-Allow-Credentials"})
 
-	methodsOk = handlers.AllowedMethods([]string{"OPTIONS", "GET", "POST", "PUT"})
+	methodsOk = handlers.AllowedMethods([]string{"OPTIONS", "GET", "POST", "PUT", "DELETE"})
 	originsOk = handlers.AllowedOrigins([]string{"*"})
 )
 
