@@ -45,8 +45,14 @@ func main() {
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
 	ServicesApiController := openapi.NewServicesApiController(ServicesApiService)
 
-	StaticRouteApiService := openapi.NewCreateNewStaticRouteApiService(kuskClient)
-	StaticRouteApiController := openapi.NewCreateNewStaticRouteApiController(StaticRouteApiService)
+	StaticCreateRouteApiService := openapi.NewCreateNewStaticRouteApiService(kuskClient)
+	StaticCreateRouteApiController := openapi.NewCreateNewStaticRouteApiController(StaticCreateRouteApiService)
+
+	StaticRouteApiService := openapi.NewStaticRouteApiService(kuskClient)
+	StaticRouteApiController := openapi.NewStaticRouteApiController(StaticRouteApiService)
+
+	StaticRoutesApiService := openapi.NewStaticRoutesApiService(kuskClient)
+	StaticRoutesApiController := openapi.NewStaticRoutesApiController(StaticRoutesApiService)
 
 	ProbeController := openapi.NewProbeController()
 
@@ -57,7 +63,9 @@ func main() {
 		ApisApiController,
 		FleetsApiController,
 		ServicesApiController,
+		StaticCreateRouteApiController,
 		StaticRouteApiController,
+		StaticRoutesApiController,
 		ProbeController,
 		NamespaceApiController,
 	)
