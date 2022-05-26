@@ -59,18 +59,18 @@ func (c *CreateNewStaticRouteApiController) Routes() Routes {
 
 // CreateStaticRoute - create new static route
 func (c *CreateNewStaticRouteApiController) CreateStaticRoute(w http.ResponseWriter, r *http.Request) {
-	staticRouteItemParam := StaticRouteItem{}
+	inlineObject1Param := InlineObject1{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
-	if err := d.Decode(&staticRouteItemParam); err != nil {
+	if err := d.Decode(&inlineObject1Param); err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-	if err := AssertStaticRouteItemRequired(staticRouteItemParam); err != nil {
+	if err := AssertInlineObject1Required(inlineObject1Param); err != nil {
 		c.errorHandler(w, r, err, nil)
 		return
 	}
-	result, err := c.service.CreateStaticRoute(r.Context(), staticRouteItemParam)
+	result, err := c.service.CreateStaticRoute(r.Context(), inlineObject1Param)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

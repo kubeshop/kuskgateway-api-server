@@ -16,16 +16,19 @@ type ServiceItem struct {
 
 	Namespace string `json:"namespace"`
 
+	ServiceType string `json:"serviceType"`
+
 	Ports []ServicePortItem `json:"ports"`
 }
 
 // AssertServiceItemRequired checks if the required fields are not zero-ed
 func AssertServiceItemRequired(obj ServiceItem) error {
 	elements := map[string]interface{}{
-		"name":      obj.Name,
-		"status":    obj.Status,
-		"namespace": obj.Namespace,
-		"ports":     obj.Ports,
+		"name":        obj.Name,
+		"status":      obj.Status,
+		"namespace":   obj.Namespace,
+		"serviceType": obj.ServiceType,
+		"ports":       obj.Ports,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
