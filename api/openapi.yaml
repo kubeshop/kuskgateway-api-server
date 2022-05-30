@@ -190,6 +190,33 @@ paths:
                 type: object
         404:
           description: "API definition not found"
+  /apis/{namespace}/{name}/deployment:
+    get:
+      tags:
+        - "apis"
+      summary: "Get API deployed yaml"
+      operationId: getApiDeployment
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "API yaml content"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "API deployed yaml not found"
   /services:
     get:
       tags:
@@ -367,6 +394,33 @@ paths:
                 type: object
         404:
           description: "Envoy fleet CRD not found"
+  /fleets/{namespace}/{name}/deployment:
+    get:
+      tags:
+        - "fleets"
+      summary: "Get envoy fleet deployment"
+      operationId: getEnvoyFleetDeployment
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Envoy fleet deployment"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "Envoy fleet deployment not found"
   /staticroutes:
     get:
       tags:
@@ -500,6 +554,33 @@ paths:
       responses:
         200:
           description: "Static route CRD"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "Static route CRD not found"
+  /staticroutes/{namespace}/{name}/deployment:
+    get:
+      tags:
+        - "static routes"
+      summary: "Get static route deployment"
+      operationId: getStaticRouteDeployment
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Static route deployment"
           content:
             application/json:
               schema:
