@@ -12,10 +12,8 @@ package openapi
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
-	"github.com/kubeshop/kusk-gateway/pkg/spec"
 )
 
 // ServicesApiService is a service that implements the logic for the ServicesApiServicer
@@ -55,47 +53,29 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 
 // GetServices - Get a list of services
 func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
-	apis, err := s.kuskClient.GetApis(namespace)
+	services, err := s.kuskClient.ListServices(namespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
 	}
-	services := []ServiceItem{}
-	for _, api := range apis.Items {
-		parser := spec.NewParser(nil)
-
-		apiSpec, err := parser.ParseFromReader(strings.NewReader(api.Spec.Spec))
-
-		if err != nil {
-			return Response(http.StatusInternalServerError, nil), err
+	toReturn := []ServiceItem{}
+	for _, svc := range services.Items {
+		anItem := ServiceItem{
+			Name:        svc.Name,
+			Namespace:   svc.Namespace,
+			ServiceType: string(svc.Spec.Type),
 		}
 
-		opts, err := spec.GetOptions(apiSpec)
-		if err != nil {
-			return Response(http.StatusInternalServerError, nil), err
-		}
-
-		if opts.Upstream != nil && opts.Upstream.Service != nil {
-			svc, err := s.kuskClient.GetSvc(opts.Upstream.Service.Namespace, opts.Upstream.Service.Name)
-			status := "available"
-			if err != nil {
-				status = "unavailable"
-			}
-
-			ports := []ServicePortItem{}
-			for _, port := range svc.Spec.Ports {
-				ports = append(ports, ServicePortItem{
-					Port:     port.Port,
-					Protocol: string(port.Protocol),
-				})
-			}
-
-			services = append(services, ServiceItem{
-				Name:      opts.Upstream.Service.Name,
-				Namespace: opts.Upstream.Service.Namespace,
-				Status:    status,
-				Ports:     ports,
+		for _, p := range svc.Spec.Ports {
+			anItem.Ports = append(anItem.Ports, ServicePortItem{
+				Name:       p.Name,
+				NodePort:   p.NodePort,
+				Port:       p.Port,
+				Protocol:   string(p.Protocol),
+				TargetPort: p.TargetPort.StrVal,
 			})
 		}
+
+		toReturn = append(toReturn, anItem)
 	}
-	return Response(http.StatusOK, services), nil
+	return Response(http.StatusOK, toReturn), nil
 }

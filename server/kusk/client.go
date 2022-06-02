@@ -28,6 +28,7 @@ type Client interface {
 	DeleteStaticRoute(kuskv1.StaticRoute) error
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
+	ListServices(namespace string) (*corev1.ServiceList, error)
 	ListNamespaces() (*corev1.NamespaceList, error)
 }
 
@@ -146,6 +147,17 @@ func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
 	}
 
 	return svc, nil
+}
+
+func (k *kuskClient) ListServices(namespace string) (*corev1.ServiceList, error) {
+	list := &corev1.ServiceList{}
+
+	if err := k.client.List(context.TODO(), list, &client.ListOptions{Namespace: namespace}); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+
 }
 
 func (k *kuskClient) GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error) {
