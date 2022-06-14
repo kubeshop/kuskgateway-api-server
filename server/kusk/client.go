@@ -2,9 +2,11 @@ package k8sclient
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -24,7 +26,7 @@ type Client interface {
 
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
-	CreateStaticRoute(namespace, name, fleetName, fleetNamespace string) (*kuskv1.StaticRoute, error)
+	CreateStaticRoute(namespace, name, fleetName, fleetNamespace, specs string) (*kuskv1.StaticRoute, error)
 	DeleteStaticRoute(kuskv1.StaticRoute) error
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
@@ -178,7 +180,7 @@ func (k *kuskClient) GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList,
 	return list, nil
 }
 
-func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespace string) (*kuskv1.StaticRoute, error) {
+func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespace, specs string) (*kuskv1.StaticRoute, error) {
 	staticRoute := &kuskv1.StaticRoute{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,
@@ -191,6 +193,17 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 			},
 		},
 	}
+
+	tmp := &kuskv1.StaticRoute{}
+
+	err := yaml.Unmarshal([]byte(specs), tmp)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	staticRoute.Spec.Paths = tmp.Spec.Paths
+	staticRoute.Spec.Hosts = tmp.Spec.Hosts
+
 	if err := k.client.Create(context.TODO(), staticRoute, &client.CreateOptions{}); err != nil {
 		return nil, err
 	}
