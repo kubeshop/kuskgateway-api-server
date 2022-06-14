@@ -42,7 +42,10 @@ func main() {
 	FleetsApiService := openapi.NewFleetsApiService(kuskClient)
 	FleetsApiController := openapi.NewFleetsApiController(FleetsApiService)
 
-	CreateFleetService := openapi.NewCreateNewFleetApiService(kuskClient)
+  CreateNewFleetApiService := openapi.NewCreateNewFleetApiService(kuskClient)
+	CreateNewFlettApiController := openapi.NewCreateNewFleetApiController(CreateNewFleetApiService)
+
+  CreateFleetService := openapi.NewCreateNewFleetApiService(kuskClient)
 	CreateFleetController := openapi.NewCreateNewFleetApiController(CreateFleetService)
 
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
@@ -65,6 +68,7 @@ func main() {
 	router := openapi.NewRouter(
 		ApisApiController,
 		FleetsApiController,
+		CreateNewFlettApiController,
 		CreateFleetController,
 		ServicesApiController,
 		StaticCreateRouteApiController,

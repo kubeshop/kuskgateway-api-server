@@ -143,6 +143,16 @@ func TestGetSvc(t *testing.T) {
 	}
 }
 
+func TestListServices(t *testing.T) {
+	setup(t)
+	_, err := testClient.ListServices("default")
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+}
+
 func TestCreateStaticRoute(t *testing.T) {
 	require := require.New(t)
 
