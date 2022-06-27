@@ -413,7 +413,8 @@ paths:
                   type: string
                 openapi:
                   type: string
-
+                xkusk:
+                  type: string
       responses:
         200:
           description: "created static route"
