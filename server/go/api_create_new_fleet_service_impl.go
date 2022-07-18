@@ -16,6 +16,7 @@ import (
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -35,6 +36,7 @@ func NewCreateNewFleetApiService(kuskClient kusk.Client) CreateNewFleetApiServic
 
 // CreateFleet - create new fleet
 func (s *CreateNewFleetApiService) CreateFleet(ctx context.Context, serviceItem ServiceItem) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "CreateFleet")
 	fleet := kuskv1.EnvoyFleet{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      serviceItem.Name,

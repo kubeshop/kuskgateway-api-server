@@ -10,6 +10,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
@@ -42,10 +44,10 @@ func main() {
 	FleetsApiService := openapi.NewFleetsApiService(kuskClient)
 	FleetsApiController := openapi.NewFleetsApiController(FleetsApiService)
 
-  CreateNewFleetApiService := openapi.NewCreateNewFleetApiService(kuskClient)
+	CreateNewFleetApiService := openapi.NewCreateNewFleetApiService(kuskClient)
 	CreateNewFlettApiController := openapi.NewCreateNewFleetApiController(CreateNewFleetApiService)
 
-  CreateFleetService := openapi.NewCreateNewFleetApiService(kuskClient)
+	CreateFleetService := openapi.NewCreateNewFleetApiService(kuskClient)
 	CreateFleetController := openapi.NewCreateNewFleetApiController(CreateFleetService)
 
 	ServicesApiService := openapi.NewServicesApiService(kuskClient)
@@ -77,6 +79,7 @@ func main() {
 		ProbeController,
 		NamespaceApiController,
 	)
+	analytics.SendAnonymousInfo(context.Background(), kuskClient.GetK8sClient(), "Starting kusk API server")
 
 	log.Printf("Server started :8080")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, methodsOk, originsOk)(router)))

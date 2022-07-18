@@ -32,6 +32,8 @@ type Client interface {
 	GetSvc(namespace, name string) (*corev1.Service, error)
 	ListServices(namespace string) (*corev1.ServiceList, error)
 	ListNamespaces() (*corev1.NamespaceList, error)
+
+	GetK8sClient() client.Client
 }
 
 type kuskClient struct {
@@ -221,4 +223,8 @@ func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {
 		return nil, err
 	}
 	return list, nil
+}
+
+func (k *kuskClient) GetK8sClient() client.Client {
+	return k.client
 }
