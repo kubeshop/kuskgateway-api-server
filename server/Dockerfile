@@ -6,8 +6,10 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
+ARG TELEMETRY_TOKEN
+
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o kusk-gateway-api
+RUN CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-X github.com/kubeshop/kusk-gateway/pkg/analytics.TelemetryToken=$TELEMETRY_TOKEN" -o kusk-gateway-api
 
 FROM scratch AS runtime
 COPY --from=build --chown=65532:65532 /go/src/kusk-gateway-api ./

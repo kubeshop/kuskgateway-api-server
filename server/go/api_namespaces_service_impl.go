@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 )
 
 // NamespacesApiService is a service that implements the logic for the NamespacesApiServicer
@@ -30,6 +31,7 @@ func NewNamespacesApiService(kuskClient kusk.Client) NamespacesApiServicer {
 
 // GetNamespaces - Get a list of namespaces
 func (s *NamespacesApiService) GetNamespaces(ctx context.Context) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetNamespaces")
 	namespaces, err := s.kuskClient.ListNamespaces()
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err

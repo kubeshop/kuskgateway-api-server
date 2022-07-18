@@ -15,6 +15,7 @@ import (
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -32,6 +33,7 @@ func NewStaticRouteApiService(kuskClient kusk.Client) StaticRouteApiServicer {
 
 // DeleteStaticRoute - Delete a StaticRoute by namespace and name
 func (s *StaticRouteApiService) DeleteStaticRoute(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "DeleteStaticRoute")
 	if err := s.kuskClient.DeleteStaticRoute(v1alpha1.StaticRoute{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,

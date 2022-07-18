@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 )
 
 // ServicesApiService is a service that implements the logic for the ServicesApiServicer
@@ -30,6 +31,7 @@ func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
 
 // GetService - Get details for a single service
 func (s *ServicesApiService) GetService(ctx context.Context, namespace string, name string) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetService")
 	svc, err := s.kuskClient.GetSvc(namespace, name)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
@@ -53,6 +55,7 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 
 // GetServices - Get a list of services
 func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetServices")
 	services, err := s.kuskClient.ListServices(namespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
