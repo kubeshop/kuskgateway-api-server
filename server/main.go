@@ -79,7 +79,7 @@ func main() {
 		ProbeController,
 		NamespaceApiController,
 	)
-	analytics.SendAnonymousInfo(context.Background(), kuskClient.GetK8sClient(), "Starting kusk API server")
+	analytics.SendAnonymousInfo(context.Background(), kuskClient.K8sClient(), "Starting kusk API server")
 
 	log.Printf("Server started :8080")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, methodsOk, originsOk)(router)))

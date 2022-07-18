@@ -31,7 +31,7 @@ func NewServicesApiService(kuskClient kusk.Client) ServicesApiServicer {
 
 // GetService - Get details for a single service
 func (s *ServicesApiService) GetService(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetService")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetService")
 	svc, err := s.kuskClient.GetSvc(namespace, name)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
@@ -55,7 +55,7 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 
 // GetServices - Get a list of services
 func (s *ServicesApiService) GetServices(ctx context.Context, namespace string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetServices")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetServices")
 	services, err := s.kuskClient.ListServices(namespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err

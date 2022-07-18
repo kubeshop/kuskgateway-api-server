@@ -36,7 +36,7 @@ func NewFleetsApiService(kuskClient kusk.Client) FleetsApiServicer {
 }
 
 func (s *FleetsApiService) DeleteFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "DeleteFleet")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "DeleteFleet")
 
 	if err := s.kuskClient.DeleteFleet(v1alpha1.EnvoyFleet{
 		ObjectMeta: v1.ObjectMeta{
@@ -51,7 +51,7 @@ func (s *FleetsApiService) DeleteFleet(ctx context.Context, namespace string, na
 
 // GetEnvoyFleet - Get details for a single envoy fleet
 func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetEnvoyFleet")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetEnvoyFleet")
 	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, 
 }
 
 func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetEnvoyFleetCRD")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetEnvoyFleetCRD")
 	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace strin
 
 // GetEnvoyFleets - Get a list of envoy fleets
 func (s *FleetsApiService) GetEnvoyFleets(ctx context.Context, namespace string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetEnvoyFleets")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetEnvoyFleets")
 	fleets, err := s.kuskClient.GetEnvoyFleets()
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err

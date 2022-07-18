@@ -31,7 +31,7 @@ func NewStaticRoutesApiService(kuskClient kusk.Client) StaticRoutesApiServicer {
 
 // GetStaticRoute - Get details for a single static route
 func (s *StaticRoutesApiService) GetStaticRoute(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetStaticRoute")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetStaticRoute")
 	staticRoute, err := s.kuskClient.GetStaticRoute(namespace, name)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
@@ -44,7 +44,7 @@ func (s *StaticRoutesApiService) GetStaticRoute(ctx context.Context, namespace s
 
 // GetStaticRouteCRD - Get static route CRD
 func (s *StaticRoutesApiService) GetStaticRouteCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetStaticRouteCRD")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetStaticRouteCRD")
 	staticRoute, err := s.kuskClient.GetStaticRoute(namespace, name)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err
@@ -55,7 +55,7 @@ func (s *StaticRoutesApiService) GetStaticRouteCRD(ctx context.Context, namespac
 
 // GetStaticRoutes - Get a list of static routes
 func (s *StaticRoutesApiService) GetStaticRoutes(ctx context.Context, namespace string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "GetStaticRoutes")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetStaticRoutes")
 	staticRoutes, err := s.kuskClient.GetStaticRoutes(namespace)
 	if err != nil {
 		return Response(http.StatusInternalServerError, err), err

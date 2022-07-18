@@ -36,7 +36,7 @@ func NewCreateNewFleetApiService(kuskClient kusk.Client) CreateNewFleetApiServic
 
 // CreateFleet - create new fleet
 func (s *CreateNewFleetApiService) CreateFleet(ctx context.Context, serviceItem ServiceItem) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.GetK8sClient(), "CreateFleet")
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "CreateFleet")
 	fleet := kuskv1.EnvoyFleet{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      serviceItem.Name,
