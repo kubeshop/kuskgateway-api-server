@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -22,6 +23,7 @@ type Client interface {
 	GetApi(namespace, name string) (*kuskv1.API, error)
 	GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error)
 	CreateApi(namespace, name, openapispec, fleetName, fleetnamespace string) (*kuskv1.API, error)
+	UpdateApi(namespace, name, openapispec, fleetName, fleetnamespace string) (*kuskv1.API, error)
 	DeleteAPI(namespace, name string) error
 
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
@@ -132,6 +134,34 @@ func (k *kuskClient) CreateApi(namespace, name, openapispec string, fleetName st
 		return nil, err
 	}
 	return api, nil
+}
+
+func (k *kuskClient) UpdateApi(namespace, name, openapispec string, fleetName string, fleetnamespace string) (*kuskv1.API, error) {
+	api := &kuskv1.API{}
+
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		// Retrieve the latest version of API before attempting update
+		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
+		if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, api); err != nil {
+			return err
+		}
+
+		api.Spec = kuskv1.APISpec{
+			Spec: openapispec,
+			Fleet: &kuskv1.EnvoyFleetID{
+				Name:      fleetName,
+				Namespace: fleetnamespace,
+			},
+		}
+
+		if err := k.client.Update(context.TODO(), api, &client.UpdateOptions{}); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return api, retryErr
 }
 
 func (k *kuskClient) DeleteAPI(namespace, name string) error {

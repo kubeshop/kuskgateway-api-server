@@ -133,6 +133,18 @@ func TestDeleteAPI(t *testing.T) {
 	require.NoError(err)
 }
 
+func TestUpdateAPI(t *testing.T) {
+	require := require.New(t)
+
+	tc := NewClient(getFakeClient())
+
+	_, err := tc.UpdateApi("default", "non-existent", "", "test", "default")
+	require.Error(err)
+
+	_, err = tc.UpdateApi("default", "sample", "", "test", "default")
+	require.NoError(err)
+}
+
 func TestGetSvc(t *testing.T) {
 	setup(t)
 	_, err := testClient.GetSvc("default", "kubernetes")
@@ -162,7 +174,7 @@ func TestCreateStaticRoute(t *testing.T) {
 	name := "default"
 	fleetNamespace := "default"
 	fleetName := "/static-route-2"
-	staticRoute, err := testClient.CreateStaticRoute(namespace, name, fleetNamespace, fleetName)
+	staticRoute, err := testClient.CreateStaticRoute(namespace, name, fleetNamespace, fleetName, "")
 
 	require.NoError(err)
 	require.NotNil(staticRoute)
