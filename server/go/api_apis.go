@@ -11,6 +11,7 @@ package openapi
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 
@@ -55,6 +56,12 @@ func (c *ApisApiController) Routes() Routes {
 			strings.ToUpper("Delete"),
 			"/apis/{namespace}/{name}",
 			c.DeleteApi,
+		},
+		{
+			"UpdateApi",
+			http.MethodPut,
+			"/apis/{namespace}/{name}",
+			c.UpdateApi,
 		},
 		{
 			"DeployApi",
@@ -107,19 +114,46 @@ func (c *ApisApiController) DeleteApi(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// DeployApi - Deploy new API
-func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
-	inlineObjectParam := InlineObject{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&inlineObjectParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+// UpdateApi - Update an API instance by namespace and name with new content
+func (c *ApisApiController) UpdateApi(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+
+	nameParam := params["name"]
+
+	existingApi, err := c.service.GetApi(r.Context(), namespaceParam, nameParam)
+	if err != nil {
+		c.errorHandler(w, r, err, &existingApi)
 		return
 	}
-	if err := AssertInlineObjectRequired(inlineObjectParam); err != nil {
+
+	inlineObjectParam, err := decodeBodyToInlineObject(r.Body)
+	if err != nil {
 		c.errorHandler(w, r, err, nil)
 		return
 	}
+
+	inlineObjectParam.Name = nameParam
+	inlineObjectParam.Namespace = namespaceParam
+
+	result, err := c.service.UpdateApi(r.Context(), inlineObjectParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
+// DeployApi - Deploy new API
+func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
+	inlineObjectParam, err := decodeBodyToInlineObject(r.Body)
+	if err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+
 	result, err := c.service.DeployApi(r.Context(), inlineObjectParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -200,4 +234,20 @@ func (c *ApisApiController) GetApis(w http.ResponseWriter, r *http.Request) {
 	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
+}
+
+func decodeBodyToInlineObject(body io.Reader) (InlineObject, error) {
+	inlineObjectParam := InlineObject{}
+	d := json.NewDecoder(body)
+	d.DisallowUnknownFields()
+
+	if err := d.Decode(&inlineObjectParam); err != nil {
+		return InlineObject{}, &ParsingError{Err: err}
+	}
+
+	if err := AssertInlineObjectRequired(inlineObjectParam); err != nil {
+		return InlineObject{}, err
+	}
+
+	return inlineObjectParam, nil
 }
