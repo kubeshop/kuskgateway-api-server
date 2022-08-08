@@ -4,6 +4,7 @@ services:
     build: ./server
     environment:
       - KUBECONFIG=/kube/config
+      - ANALYTICS_ENABLED=false
     volumes:
       - $HOME/.kube/config:/kube/config:ro
     ports:
