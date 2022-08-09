@@ -114,6 +114,53 @@ paths:
                 $ref: "#/components/schemas/ApiItem"
         404:
           description: "API item not found"
+    put:
+      tags:
+        - "apis"
+      summary: "Update an existing API"
+      description: "Updates an existing API in the cluster"
+      operationId: updateApi
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: "API content that needs to be updated"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                envoyFleetName:
+                  type: string
+                envoyFleetNamespace:
+                  type: string
+                openapi:
+                  type: string
+      responses:
+        201:
+          description: "API deployed"
+        400:
+          description: "The content of the API is malformed"
+          content:
+            application/json:
+              schema:
+                type: string
+        404:
+          description: "API not found"
     delete:
       tags:
         - "apis"

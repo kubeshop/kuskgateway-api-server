@@ -178,3 +178,15 @@ func (s *ApisApiService) DeleteApi(ctx context.Context, namespace string, name s
 	}
 	return Response(http.StatusOK, nil), nil
 }
+
+// DeleteApi - Delete an API instance by namespace and name
+func (s *ApisApiService) UpdateApi(ctx context.Context, payload InlineObject) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "UpdateApi")
+
+	api, err := s.kuskClient.UpdateApi(payload.Namespace, payload.Name, payload.Openapi, payload.EnvoyFleetName, payload.EnvoyFleetNamespace)
+	if err != nil {
+		return Response(http.StatusInternalServerError, err), errors.New("UpdateApi method failed")
+	}
+
+	return Response(http.StatusCreated, api), nil
+}

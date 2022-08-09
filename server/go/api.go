@@ -87,6 +87,7 @@ type StaticRoutesApiRouter interface {
 // and updated with the logic required for the API.
 type ApisApiServicer interface {
 	DeleteApi(context.Context, string, string) (ImplResponse, error)
+	UpdateApi(context.Context, InlineObject) (ImplResponse, error)
 	DeployApi(context.Context, InlineObject) (ImplResponse, error)
 	GetApi(context.Context, string, string) (ImplResponse, error)
 	GetApiCRD(context.Context, string, string) (ImplResponse, error)
