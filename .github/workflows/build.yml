@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [main, ARM64_build]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -15,10 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: build
         run: make build
+        with:
+          platforms: linux/amd64,linux/arm64
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
