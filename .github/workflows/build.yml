@@ -16,12 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GKE_SA_KEY }}
-      - run: |-
-          gcloud --quiet auth configure-docker
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         with:
@@ -34,6 +28,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: server
+          file: server/Dockerfile
           platforms: linux/amd64,linux/arm64
 
 #      - name: build
