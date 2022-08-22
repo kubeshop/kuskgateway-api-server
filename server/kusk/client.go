@@ -9,6 +9,8 @@ import (
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -39,12 +41,17 @@ type Client interface {
 }
 
 type kuskClient struct {
-	client client.Client
+	client              client.Client
+	kuskManagedSelector labels.Selector
 }
 
 func NewClient(c client.Client) Client {
+	// for use when querying apis and static routes to filter out those that are managed by kusk
+	r, _ := labels.NewRequirement("kusk-managed", selection.NotIn, []string{"true"})
+
 	return &kuskClient{
-		client: c,
+		client:              c,
+		kuskManagedSelector: labels.NewSelector().Add(*r),
 	}
 }
 
@@ -82,7 +89,14 @@ func (k *kuskClient) DeleteFleet(fleet kuskv1.EnvoyFleet) error {
 
 func (k *kuskClient) GetApis(namespace string) (*kuskv1.APIList, error) {
 	list := &kuskv1.APIList{}
-	if err := k.client.List(context.TODO(), list, &client.ListOptions{Namespace: namespace}); err != nil {
+	if err := k.client.List(
+		context.TODO(),
+		list,
+		&client.ListOptions{
+			Namespace:     namespace,
+			LabelSelector: k.kuskManagedSelector,
+		},
+	); err != nil {
 		return nil, err
 	}
 
@@ -102,7 +116,14 @@ func (k *kuskClient) GetApi(namespace, name string) (*kuskv1.API, error) {
 // GetApiByFleet gets all APIs associated with the EnvoyFleet
 func (k *kuskClient) GetApiByEnvoyFleet(namespace, fleetNamespace, fleetName string) (*kuskv1.APIList, error) {
 	list := kuskv1.APIList{}
-	if err := k.client.List(context.TODO(), &list, &client.ListOptions{Namespace: namespace}); err != nil {
+	if err := k.client.List(
+		context.TODO(),
+		&list,
+		&client.ListOptions{
+			Namespace:     namespace,
+			LabelSelector: k.kuskManagedSelector,
+		},
+	); err != nil {
 		return nil, err
 	}
 
@@ -205,7 +226,14 @@ func (k *kuskClient) GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute
 
 func (k *kuskClient) GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error) {
 	list := &kuskv1.StaticRouteList{}
-	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
+	if err := k.client.List(
+		context.TODO(),
+		list,
+		&client.ListOptions{
+			Namespace:     namespace,
+			LabelSelector: k.kuskManagedSelector,
+		},
+	); err != nil {
 		return nil, err
 	}
 
