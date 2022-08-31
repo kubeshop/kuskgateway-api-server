@@ -11,9 +11,7 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"strings"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
@@ -53,26 +51,20 @@ func (s *FleetsApiService) DeleteFleet(ctx context.Context, namespace string, na
 func (s *FleetsApiService) GetEnvoyFleet(ctx context.Context, namespace string, name string) (ImplResponse, error) {
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetEnvoyFleet")
 	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
-
 	if err != nil {
-		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
-			return Response(http.StatusNotFound, err), err
-		}
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
+
 	return Response(http.StatusOK, s.convertEnvoyFleetCRDtoEnvoyFleetModel(fleet)), nil
 }
 
 func (s *FleetsApiService) GetEnvoyFleetCRD(ctx context.Context, namespace string, name string) (ImplResponse, error) {
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetEnvoyFleetCRD")
 	fleet, err := s.kuskClient.GetEnvoyFleet(namespace, name)
-
 	if err != nil {
-		if strings.Contains(err.Error(), fmt.Sprintf(`envoyfleet.gateway.kusk.io "%s" not found`, name)) {
-			return Response(http.StatusNotFound, err), err
-		}
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
+
 	return Response(http.StatusOK, fleet), nil
 }
 

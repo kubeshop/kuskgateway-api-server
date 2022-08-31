@@ -2,18 +2,22 @@ package k8sclient
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+var ErrNotFound = errors.New("error not found")
 
 type Client interface {
 	GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error)
@@ -66,10 +70,13 @@ func (k *kuskClient) GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error) {
 }
 
 func (k *kuskClient) GetEnvoyFleet(namespace, name string) (*kuskv1.EnvoyFleet, error) {
-
 	envoy := &kuskv1.EnvoyFleet{}
 
 	if err := k.client.Get(context.Background(), client.ObjectKey{Namespace: namespace, Name: name}, envoy); err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil, ErrNotFound
+		}
+
 		return nil, err
 	}
 	return envoy, nil
@@ -104,10 +111,12 @@ func (k *kuskClient) GetApis(namespace string) (*kuskv1.APIList, error) {
 }
 
 func (k *kuskClient) GetApi(namespace, name string) (*kuskv1.API, error) {
-
 	api := &kuskv1.API{}
 
 	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, api); err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	return api, nil
@@ -198,6 +207,10 @@ func (k *kuskClient) DeleteAPI(namespace, name string) error {
 func (k *kuskClient) GetSvc(namespace, name string) (*corev1.Service, error) {
 	svc := &corev1.Service{}
 	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, svc); err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil, ErrNotFound
+		}
+
 		return nil, err
 	}
 
@@ -218,6 +231,10 @@ func (k *kuskClient) ListServices(namespace string) (*corev1.ServiceList, error)
 func (k *kuskClient) GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error) {
 	staticRoute := &kuskv1.StaticRoute{}
 	if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, staticRoute); err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil, ErrNotFound
+		}
+
 		return nil, err
 	}
 

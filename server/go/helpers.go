@@ -10,8 +10,20 @@
 package openapi
 
 import (
+	"net/http"
 	"reflect"
+
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 )
+
+func handleGetError(err error) (ImplResponse, error) {
+	switch err {
+	case kusk.ErrNotFound:
+		return Response(http.StatusNotFound, err), err
+	default:
+		return Response(http.StatusInternalServerError, err), err
+	}
+}
 
 // Response return a ImplResponse struct filled
 func Response(code int, body interface{}) ImplResponse {

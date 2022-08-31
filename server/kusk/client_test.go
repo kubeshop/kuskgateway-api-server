@@ -124,6 +124,15 @@ func TestGetApi(t *testing.T) {
 
 	fmt.Println(api.Spec.Spec)
 }
+func TestGetNotFoundApi(t *testing.T) {
+	setup(t)
+	_, err := testClient.GetApi("default", "not-found")
+	if err == ErrNotFound {
+		return
+	}
+	t.Errorf("%s does not equal to ErrNotFound", err)
+	t.Fail()
+}
 
 func TestDeleteAPI(t *testing.T) {
 	require := require.New(t)

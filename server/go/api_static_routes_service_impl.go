@@ -34,7 +34,7 @@ func (s *StaticRoutesApiService) GetStaticRoute(ctx context.Context, namespace s
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetStaticRoute")
 	staticRoute, err := s.kuskClient.GetStaticRoute(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
 	return Response(http.StatusOK, StaticRouteItem{
 		Name:      staticRoute.Name,
@@ -47,7 +47,7 @@ func (s *StaticRoutesApiService) GetStaticRouteCRD(ctx context.Context, namespac
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetStaticRouteCRD")
 	staticRoute, err := s.kuskClient.GetStaticRoute(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
 
 	return Response(http.StatusOK, staticRoute), nil
