@@ -62,7 +62,7 @@ func (s *ApisApiService) GetApi(ctx context.Context, namespace string, name stri
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetApi")
 	api, err := s.kuskClient.GetApi(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
 
 	return Response(http.StatusOK, s.convertAPICRDtoAPIModel(api)), nil
@@ -73,7 +73,7 @@ func (s *ApisApiService) GetApiCRD(ctx context.Context, namespace string, name s
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetApiCRD")
 	api, err := s.kuskClient.GetApi(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
 
 	return Response(http.StatusOK, api), nil
@@ -84,7 +84,7 @@ func (s *ApisApiService) GetApiDefinition(ctx context.Context, namespace string,
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetApiDefinition")
 	api, err := s.kuskClient.GetApi(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
 
 	return Response(http.StatusOK, api.Spec.Spec), nil
@@ -95,8 +95,9 @@ func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namesp
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetPostProcessedOpenApiSpec")
 	api, err := s.kuskClient.GetApi(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return handleGetError(err)
 	}
+
 	rawyaml := util.ParseKuskOpenAPI(api.Spec.Spec)
 	yml, _ := yaml.Marshal(rawyaml)
 

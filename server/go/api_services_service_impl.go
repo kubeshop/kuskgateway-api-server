@@ -34,7 +34,12 @@ func (s *ServicesApiService) GetService(ctx context.Context, namespace string, n
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetService")
 	svc, err := s.kuskClient.GetSvc(namespace, name)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		switch err {
+		case kusk.ErrNotFound:
+			return Response(http.StatusNotFound, err), err
+		default:
+			return Response(http.StatusInternalServerError, err), err
+		}
 	}
 
 	ports := []ServicePortItem{}
