@@ -11,7 +11,6 @@ package openapi
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
@@ -61,7 +60,7 @@ func (s *CreateNewFleetApiService) CreateFleet(ctx context.Context, serviceItem 
 	}
 
 	if f, err := s.kuskClient.CreateFleet(fleet); err != nil {
-		return Response(http.StatusInternalServerError, err), errors.New("CreateFleet method failed")
+		return GetResponseFromK8sError(err), err
 	} else {
 		return Response(http.StatusCreated, f), nil
 	}

@@ -34,7 +34,7 @@ func (s *CreateNewStaticRouteApiService) CreateStaticRoute(ctx context.Context, 
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "CreateStaticRoute")
 	staticRoute, err := s.kuskClient.CreateStaticRoute(staticRouteItem.Namespace, staticRouteItem.Name, staticRouteItem.EnvoyFleetName, staticRouteItem.EnvoyFleetNamespace, staticRouteItem.Openapi)
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return GetResponseFromK8sError(err), err
 	}
 
 	toReturn := StaticRouteItem{
