@@ -34,7 +34,7 @@ func (s *NamespacesApiService) GetNamespaces(ctx context.Context) (ImplResponse,
 	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetNamespaces")
 	namespaces, err := s.kuskClient.ListNamespaces()
 	if err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return GetResponseFromK8sError(err), err
 	}
 	toReturn := []NamespaceItem{}
 	for _, ns := range namespaces.Items {

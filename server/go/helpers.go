@@ -10,19 +10,18 @@
 package openapi
 
 import (
+	"errors"
 	"net/http"
 	"reflect"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
-func handleGetError(err error) (ImplResponse, error) {
-	switch err {
-	case kusk.ErrNotFound:
-		return Response(http.StatusNotFound, err), err
-	default:
-		return Response(http.StatusInternalServerError, err), err
+func GetResponseFromK8sError(err error) ImplResponse {
+	if status := apierrors.APIStatus(nil); errors.As(err, &status) {
+		return Response(int(status.Status().Code), status.Status().Message)
 	}
+	return Response(http.StatusInternalServerError, err)
 }
 
 // Response return a ImplResponse struct filled

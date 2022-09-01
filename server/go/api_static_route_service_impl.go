@@ -40,7 +40,7 @@ func (s *StaticRouteApiService) DeleteStaticRoute(ctx context.Context, namespace
 			Namespace: namespace,
 		},
 	}); err != nil {
-		return Response(http.StatusInternalServerError, err), err
+		return GetResponseFromK8sError(err), err
 	}
 	return Response(http.StatusOK, nil), nil
 }
