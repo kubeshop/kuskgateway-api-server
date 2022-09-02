@@ -7,11 +7,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 ARG TELEMETRY_TOKEN
+ARG VERSION
 ARG TARGETARCH
 ARG TARGETOS
 
 COPY . .
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go build -v -ldflags "-X github.com/kubeshop/kusk-gateway/pkg/analytics.TelemetryToken=$TELEMETRY_TOKEN" -o kusk-gateway-api
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go build -v -ldflags "-X github.com/kubeshop/kusk-gateway/pkg/analytics.TelemetryToken=$TELEMETRY_TOKEN -X github.com/kubeshop/kusk-gateway/pkg/build.Version=$VERSION" -o kusk-gateway-api
 
 FROM --platform=$BUILDPLATFORM gcr.io/distroless/static:nonroot
 COPY --from=builder --chown=65532:65532 /go/src/kusk-gateway-api ./
