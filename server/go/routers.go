@@ -120,7 +120,9 @@ func readFileHeaderToTempFile(fileHeader *multipart.FileHeader) (*os.File, error
 
 	defer file.Close()
 
-	file.Write(fileBytes)
+	if _, err := file.Write(fileBytes); err != nil {
+		return nil, err
+	}
 
 	return file, nil
 }

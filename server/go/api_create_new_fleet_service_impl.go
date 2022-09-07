@@ -50,13 +50,13 @@ func (s *CreateNewFleetApiService) CreateFleet(ctx context.Context, serviceItem 
 	}
 
 	for _, p := range serviceItem.Ports {
-		fleet.Spec.Service.Ports = append(fleet.Spec.Service.Ports, corev1.ServicePort{
-			Name:       p.Name,
+		servicePort := corev1.ServicePort{Name: p.Name,
 			NodePort:   p.NodePort,
 			Port:       p.Port,
 			Protocol:   corev1.Protocol(p.Protocol),
 			TargetPort: intstr.FromString(p.TargetPort),
-		})
+		}
+		fleet.Spec.Service.Ports = append(fleet.Spec.Service.Ports, servicePort)
 	}
 
 	if f, err := s.kuskClient.CreateFleet(fleet); err != nil {

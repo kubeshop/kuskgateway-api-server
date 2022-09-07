@@ -110,7 +110,10 @@ func (c *ApisApiController) DeleteApi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
+	if err := EncodeJSONResponse(result.Body, &result.Code, w); err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
 
 }
 
@@ -143,7 +146,10 @@ func (c *ApisApiController) UpdateApi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
+	if err := EncodeJSONResponse(result.Body, &result.Code, w); err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
 }
 
 // DeployApi - Deploy new API
@@ -161,7 +167,10 @@ func (c *ApisApiController) DeployApi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
+	if err := EncodeJSONResponse(result.Body, &result.Code, w); err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
 
 }
 

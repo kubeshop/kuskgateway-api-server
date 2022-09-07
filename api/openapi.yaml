@@ -678,9 +678,7 @@ components:
       type: object
       required:
         - name
-        - nodePort
         - port
-        - protocol
         - targetPort
       properties:
         name:

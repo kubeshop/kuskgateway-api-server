@@ -25,9 +25,7 @@ type ServicePortItem struct {
 func AssertServicePortItemRequired(obj ServicePortItem) error {
 	elements := map[string]interface{}{
 		"name":       obj.Name,
-		"nodePort":   obj.NodePort,
 		"port":       obj.Port,
-		"protocol":   obj.Protocol,
 		"targetPort": obj.TargetPort,
 	}
 	for name, el := range elements {

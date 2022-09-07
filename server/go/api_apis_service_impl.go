@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
-	"github.com/GIT_USER_ID/GIT_REPO_ID/util"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
@@ -89,20 +88,6 @@ func (s *ApisApiService) GetApiDefinition(ctx context.Context, namespace string,
 	return Response(http.StatusOK, api.Spec.Spec), nil
 }
 
-// GetPostProcessedOpenApiSpec - Get the post-processed OpenAPI spec by API id
-func (s *ApisApiService) GetPostProcessedOpenApiSpec(ctx context.Context, namespace string, name string) (ImplResponse, error) {
-	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "GetPostProcessedOpenApiSpec")
-	api, err := s.kuskClient.GetApi(namespace, name)
-	if err != nil {
-		return GetResponseFromK8sError(err), err
-	}
-
-	rawyaml := util.ParseKuskOpenAPI(api.Spec.Spec)
-	yml, _ := yaml.Marshal(rawyaml)
-
-	return Response(http.StatusOK, string(yml)), nil
-}
-
 func (s *ApisApiService) convertAPIListCRDtoAPIsModel(apis kuskv1.APIList) []ApiItem {
 	toReturn := []ApiItem{}
 	for _, api := range apis.Items {
@@ -158,7 +143,9 @@ func (s *ApisApiService) DeployApi(ctx context.Context, payload InlineObject) (I
 
 func getApiVersion(apiSpec string) string {
 	var yml map[string]interface{}
-	yaml.Unmarshal([]byte(apiSpec), &yml)
+	if err := yaml.Unmarshal([]byte(apiSpec), &yml); err != nil {
+		return ""
+	}
 
 	for k, v := range yml {
 		if k == "info" {
