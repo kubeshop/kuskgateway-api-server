@@ -605,7 +605,6 @@ components:
       type: object
       required:
         - name
-        - status
         - namespace
         - serviceType
         - ports

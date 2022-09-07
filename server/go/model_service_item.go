@@ -25,7 +25,6 @@ type ServiceItem struct {
 func AssertServiceItemRequired(obj ServiceItem) error {
 	elements := map[string]interface{}{
 		"name":        obj.Name,
-		"status":      obj.Status,
 		"namespace":   obj.Namespace,
 		"serviceType": obj.ServiceType,
 		"ports":       obj.Ports,
