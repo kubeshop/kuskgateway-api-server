@@ -267,8 +267,12 @@ func getFakeClient() client.Client {
 
 func getClient() (client.Client, error) {
 	scheme := runtime.NewScheme()
-	kuskv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	if err := kuskv1.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
+	if err := corev1.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
 	config, err := getConfig()
 	if err != nil {
 		return nil, err

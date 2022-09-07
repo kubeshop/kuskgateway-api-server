@@ -605,7 +605,6 @@ components:
       type: object
       required:
         - name
-        - status
         - namespace
         - serviceType
         - ports
@@ -678,9 +677,7 @@ components:
       type: object
       required:
         - name
-        - nodePort
         - port
-        - protocol
         - targetPort
       properties:
         name:
