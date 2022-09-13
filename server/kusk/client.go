@@ -35,6 +35,7 @@ type Client interface {
 	GetStaticRoute(namespace, name string) (*kuskv1.StaticRoute, error)
 	GetStaticRoutes(namespace string) (*kuskv1.StaticRouteList, error)
 	CreateStaticRoute(namespace, name, fleetName, fleetNamespace, specs string) (*kuskv1.StaticRoute, error)
+	UpdateStaticRoute(namespace, name, fleetName, fleetNamespace, specs string) (*kuskv1.StaticRoute, error)
 	DeleteStaticRoute(kuskv1.StaticRoute) error
 
 	GetSvc(namespace, name string) (*corev1.Service, error)
@@ -286,6 +287,37 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 	}
 
 	return staticRoute, nil
+}
+
+func (k *kuskClient) UpdateStaticRoute(namespace, name, fleetName, fleetNamespace, specs string) (*kuskv1.StaticRoute, error) {
+	staticRoute := &kuskv1.StaticRoute{}
+
+	// marshal the paths and hosts separately for the static route
+	// to use later
+	tmp := &kuskv1.StaticRoute{}
+	err := yaml.Unmarshal([]byte(specs), tmp)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		if err := k.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, staticRoute); err != nil {
+			return err
+		}
+
+		staticRoute.Spec = kuskv1.StaticRouteSpec{
+			Fleet: &kuskv1.EnvoyFleetID{
+				Name:      fleetName,
+				Namespace: fleetNamespace,
+			},
+			Paths: tmp.Spec.Paths,
+			Hosts: tmp.Spec.Hosts,
+		}
+
+		return k.client.Update(context.TODO(), staticRoute, &client.UpdateOptions{})
+	})
+
+	return staticRoute, retryErr
 }
 
 func (k *kuskClient) DeleteStaticRoute(sroute v1alpha1.StaticRoute) error {

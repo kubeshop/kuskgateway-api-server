@@ -13,8 +13,9 @@ import (
 	"context"
 	"net/http"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
+
+	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 )
 
 // StaticRoutesApiService is a service that implements the logic for the StaticRoutesApiServicer
@@ -69,4 +70,20 @@ func (s *StaticRoutesApiService) GetStaticRoutes(ctx context.Context, namespace 
 		})
 	}
 	return Response(http.StatusOK, toReturn), nil
+}
+
+func (s *StaticRoutesApiService) UpdateStaticRoute(ctx context.Context, staticRoute InlineObject) (ImplResponse, error) {
+	analytics.SendAnonymousInfo(ctx, s.kuskClient.K8sClient(), "UpdateStaticRoute")
+	updatedStaticRoute, err := s.kuskClient.UpdateStaticRoute(staticRoute.Namespace, staticRoute.Name, staticRoute.EnvoyFleetName, staticRoute.EnvoyFleetNamespace, staticRoute.Openapi)
+	if err != nil {
+		return GetResponseFromK8sError(err), err
+	}
+
+	toReturn := StaticRouteItem{
+		Name:                updatedStaticRoute.Name,
+		Namespace:           updatedStaticRoute.Namespace,
+		EnvoyFleetName:      updatedStaticRoute.Spec.Fleet.Name,
+		EnvoyFleetNamespace: updatedStaticRoute.Spec.Fleet.Namespace,
+	}
+	return Response(http.StatusCreated, toReturn), nil
 }

@@ -67,6 +67,12 @@ func (c *StaticRoutesApiController) Routes() Routes {
 			"/staticroutes",
 			c.GetStaticRoutes,
 		},
+		{
+			"UpdateStaticRoute",
+			strings.ToUpper("Put"),
+			"/staticroutes/{namespace}/{name}",
+			c.UpdateStaticRoute,
+		},
 	}
 }
 
@@ -111,6 +117,36 @@ func (c *StaticRoutesApiController) GetStaticRoutes(w http.ResponseWriter, r *ht
 	query := r.URL.Query()
 	namespaceParam := query.Get("namespace")
 	result, err := c.service.GetStaticRoutes(r.Context(), namespaceParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
+func (c *StaticRoutesApiController) UpdateStaticRoute(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	namespaceParam := params["namespace"]
+	nameParam := params["name"]
+
+	existingStaticRoute, err := c.service.GetStaticRoute(r.Context(), namespaceParam, nameParam)
+	if err != nil {
+		c.errorHandler(w, r, err, &existingStaticRoute)
+		return
+	}
+
+	staticRouteItem, err := decodeBodyToInlineObject(r.Body)
+	if err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+
+	staticRouteItem.Name = nameParam
+	staticRouteItem.Namespace = namespaceParam
+
+	result, err := c.service.UpdateStaticRoute(r.Context(), staticRouteItem)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -515,6 +515,56 @@ paths:
                 $ref: "#/components/schemas/StaticRouteItem"
         404:
           description: "Static Route not found by namespace-name combination"
+    put:
+      tags:
+        - "static routes"
+      summary: "Update a static route by namespace and name"
+      operationId: "updateStaticRoute"
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: "static route content"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                envoyFleetName:
+                  type: string
+                envoyFleetNamespace:
+                  type: string
+                openapi:
+                  type: string
+      responses:
+        201:
+          description: "static route updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaticRouteItem"
+        400:
+          description: "The content of the static route is malformed"
+          content:
+            application/json:
+              schema:
+                type: string
+        404:
+          description: "static route not found"
     delete:
       tags:
         - "static Route"

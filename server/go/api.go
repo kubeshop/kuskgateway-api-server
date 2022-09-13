@@ -79,6 +79,7 @@ type StaticRoutesApiRouter interface {
 	GetStaticRoute(http.ResponseWriter, *http.Request)
 	GetStaticRouteCRD(http.ResponseWriter, *http.Request)
 	GetStaticRoutes(http.ResponseWriter, *http.Request)
+	UpdateStaticRoute(http.ResponseWriter, *http.Request)
 }
 
 // ApisApiServicer defines the api actions for the ApisApi service
@@ -155,4 +156,5 @@ type StaticRoutesApiServicer interface {
 	GetStaticRoute(context.Context, string, string) (ImplResponse, error)
 	GetStaticRouteCRD(context.Context, string, string) (ImplResponse, error)
 	GetStaticRoutes(context.Context, string) (ImplResponse, error)
+	UpdateStaticRoute(context.Context, InlineObject) (ImplResponse, error)
 }
