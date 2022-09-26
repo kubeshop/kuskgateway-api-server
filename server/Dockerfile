@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/golang:1.17 as builder
+FROM --platform=$BUILDPLATFORM docker.io/golang:1.18 as builder
 WORKDIR /go/src
 # Copy `go.mod` for definitions and `go.sum` to invalidate the next layer
 # in case of a change in the dependencies
