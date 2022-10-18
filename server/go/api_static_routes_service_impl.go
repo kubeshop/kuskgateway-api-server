@@ -15,7 +15,7 @@ import (
 
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	"github.com/kubeshop/kuskgateway-api-server/kusk"
 )
 
 // StaticRoutesApiService is a service that implements the logic for the StaticRoutesApiServicer

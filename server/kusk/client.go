@@ -1,4 +1,4 @@
-package k8sclient
+package kusk
 
 import (
 	"context"

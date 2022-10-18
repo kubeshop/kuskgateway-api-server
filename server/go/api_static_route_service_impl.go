@@ -13,9 +13,9 @@ import (
 	"context"
 	"net/http"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
+	"github.com/kubeshop/kuskgateway-api-server/kusk"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

@@ -26,8 +26,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
+	openapi "github.com/kubeshop/kuskgateway-api-server/go"
+	"github.com/kubeshop/kuskgateway-api-server/kusk"
 )
 
 func main() {
