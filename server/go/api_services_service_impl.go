@@ -13,8 +13,8 @@ import (
 	"context"
 	"net/http"
 
-	kusk "github.com/GIT_USER_ID/GIT_REPO_ID/kusk"
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
+	"github.com/kubeshop/kuskgateway-api-server/kusk"
 )
 
 // ServicesApiService is a service that implements the logic for the ServicesApiServicer
