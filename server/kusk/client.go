@@ -1,11 +1,12 @@
 package kusk
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 
-	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
@@ -13,6 +14,8 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -43,19 +46,23 @@ type Client interface {
 	ListNamespaces() (*corev1.NamespaceList, error)
 
 	K8sClient() client.Client
+
+	GetLogs(name, namespace string, logs chan []byte) error
 }
 
 type kuskClient struct {
 	client              client.Client
+	config              *rest.Config
 	kuskManagedSelector labels.Selector
 }
 
-func NewClient(c client.Client) Client {
+func NewClient(c client.Client, config *rest.Config) Client {
 	// for use when querying apis and static routes to filter out those that are managed by kusk
 	r, _ := labels.NewRequirement("kusk-managed", selection.NotIn, []string{"true"})
 
 	return &kuskClient{
 		client:              c,
+		config:              config,
 		kuskManagedSelector: labels.NewSelector().Add(*r),
 	}
 }
@@ -67,6 +74,7 @@ func (k *kuskClient) GetEnvoyFleets() (*kuskv1.EnvoyFleetList, error) {
 	if err := k.client.List(context.TODO(), list, &client.ListOptions{}); err != nil {
 		return nil, err
 	}
+
 	return list, nil
 }
 
@@ -320,7 +328,7 @@ func (k *kuskClient) UpdateStaticRoute(namespace, name, fleetName, fleetNamespac
 	return staticRoute, retryErr
 }
 
-func (k *kuskClient) DeleteStaticRoute(sroute v1alpha1.StaticRoute) error {
+func (k *kuskClient) DeleteStaticRoute(sroute kuskv1.StaticRoute) error {
 	return k.client.Delete(context.TODO(), &sroute, &client.DeleteOptions{})
 }
 
@@ -332,6 +340,84 @@ func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {
 	return list, nil
 }
 
+func (k *kuskClient) GetLogs(name, namespace string, logs chan []byte) error {
+	clientset, err := kubernetes.NewForConfig(k.K8sConfig())
+	if err != nil {
+		return err
+	}
+
+	pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{
+		LabelSelector: fmt.Sprintf("app.kubernetes.io/instance=%s", name),
+	})
+
+	var pod corev1.Pod
+	if len(pods.Items) == 1 {
+		pod = pods.Items[0]
+	}
+	count := int64(1)
+	fmt.Println("TADA")
+	// go func() {
+	defer close(logs)
+	for _, container := range pod.Spec.Containers {
+		podLogOptions := corev1.PodLogOptions{
+			Follow:    true,
+			TailLines: &count,
+			Container: container.Name,
+		}
+		podLogRequest := clientset.CoreV1().
+			Pods(pod.Namespace).
+			GetLogs(pod.Name, &podLogOptions)
+
+		stream, err := podLogRequest.Stream(context.Background())
+		if err != nil {
+			fmt.Println("stream error", "error", err)
+			continue
+		}
+		reader := bufio.NewReader(stream)
+		for {
+			b, err := ReadLongLine(reader)
+			if err != nil {
+				if err == io.EOF {
+					err = nil
+				}
+				break
+			}
+			fmt.Println("blah blah TailPodLogs stream scan", "out", string(b), "pod", pod.Name)
+			logs <- b
+		}
+
+		if err != nil {
+			fmt.Println("scanner error", "error", err)
+		}
+	}
+	// }()
+	return nil
+}
+
 func (k *kuskClient) K8sClient() client.Client {
 	return k.client
+}
+
+func (k *kuskClient) K8sConfig() *rest.Config {
+	return k.config
+}
+
+// ReadLongLine reads long line
+func ReadLongLine(r *bufio.Reader) (line []byte, err error) {
+	var buffer []byte
+	var isPrefix bool
+
+	for {
+		buffer, isPrefix, err = r.ReadLine()
+		line = append(line, buffer...)
+		if err != nil {
+			break
+		}
+
+		if !isPrefix {
+			break
+		}
+	}
+
+	return line, err
 }

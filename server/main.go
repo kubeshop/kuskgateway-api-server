@@ -31,12 +31,17 @@ import (
 )
 
 func main() {
-	k8sClient, err := getClient()
+	config, err := getConfig()
+	if err != nil {
+		log.Fatalf(fmt.Errorf("unable to get kubernetes config: %w", err).Error())
+	}
+
+	k8sClient, err := getClient(config)
 	if err != nil {
 		log.Fatalf(fmt.Errorf("unable to get kubernetes client: %w", err).Error())
 	}
 
-	kuskClient := kusk.NewClient(k8sClient)
+	kuskClient := kusk.NewClient(k8sClient, config)
 
 	ApisApiService := openapi.NewApisApiService(kuskClient)
 	ApisApiController := openapi.NewApisApiController(ApisApiService)
@@ -137,13 +142,12 @@ func getConfig() (*rest.Config, error) {
 
 	return config, err
 }
-func getClient() (client.Client, error) {
+func getClient(config *rest.Config) (client.Client, error) {
 	scheme := runtime.NewScheme()
-	kuskv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
-
-	config, err := getConfig()
-	if err != nil {
+	if err := kuskv1.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
+	if err := corev1.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
 
