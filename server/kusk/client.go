@@ -47,7 +47,8 @@ type Client interface {
 
 	K8sClient() client.Client
 
-	GetLogs(name, namespace string, logs chan []byte) error
+	TailLogs(name, namespace string, logs chan []byte) (string, error)
+	GetLogs(name, namespace string) (chan string, error)
 }
 
 type kuskClient struct {
@@ -340,10 +341,11 @@ func (k *kuskClient) ListNamespaces() (*corev1.NamespaceList, error) {
 	return list, nil
 }
 
-func (k *kuskClient) GetLogs(name, namespace string, logs chan []byte) error {
+func (k *kuskClient) TailLogs(name, namespace string, logs chan []byte) (string, error) {
+	fmt.Println("TADA")
 	clientset, err := kubernetes.NewForConfig(k.K8sConfig())
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{
@@ -354,8 +356,7 @@ func (k *kuskClient) GetLogs(name, namespace string, logs chan []byte) error {
 	if len(pods.Items) == 1 {
 		pod = pods.Items[0]
 	}
-	count := int64(1)
-	fmt.Println("TADA")
+	count := int64(1000)
 	// go func() {
 	defer close(logs)
 	for _, container := range pod.Spec.Containers {
@@ -375,6 +376,7 @@ func (k *kuskClient) GetLogs(name, namespace string, logs chan []byte) error {
 		}
 		reader := bufio.NewReader(stream)
 		for {
+			fmt.Println(".")
 			b, err := ReadLongLine(reader)
 			if err != nil {
 				if err == io.EOF {
@@ -391,6 +393,51 @@ func (k *kuskClient) GetLogs(name, namespace string, logs chan []byte) error {
 		}
 	}
 	// }()
+	return "", nil
+}
+
+func (k *kuskClient) GetLogs(name, namespace string) (out chan string, err error) {
+	clientset, _ := kubernetes.NewForConfig(k.K8sConfig())
+	ctx := context.Background()
+	cancelCtx, _ := context.WithCancel(ctx)
+	logs := make(chan []byte)
+
+	go func() {
+		GetPodLogs(clientset, cancelCtx, namespace, name, logs)
+
+		for l := range logs {
+			out <- string(l)
+		}
+	}()
+
+	fmt.Println("OUT", out)
+
+	return
+}
+
+func GetPodLogs(client *kubernetes.Clientset, cancelCtx context.Context, namespace, podName string, logs chan []byte) error {
+	PodLogsConnection := client.CoreV1().Pods(namespace).GetLogs(podName, &corev1.PodLogOptions{
+		Follow:    true,
+		TailLines: &[]int64{int64(10)}[0],
+	})
+	LogStream, err := PodLogsConnection.Stream(context.Background())
+	if err != nil {
+		return err
+	}
+	defer LogStream.Close()
+
+	reader := bufio.NewReader(LogStream)
+	// var line string
+	for {
+		logs <- []byte(".")
+		select {
+		case <-cancelCtx.Done():
+			break
+		default:
+			line, _ := ReadLongLine(reader)
+			logs <- line
+		}
+	}
 	return nil
 }
 

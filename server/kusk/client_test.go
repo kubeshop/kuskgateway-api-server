@@ -227,13 +227,9 @@ func TestDeleteStaticRoute(t *testing.T) {
 
 func TestGetLogs(t *testing.T) {
 	setup(t)
-	out := make(chan string)
 	logs := make(chan []byte)
 
-	if err := testClient.GetLogs("kusk-gateway-envoy-fleet", "kusk-system", logs); err != nil {
-		out <- err.Error()
-		return
-	}
+	fmt.Println(testClient.TailLogs("kusk-gateway-envoy-fleet", "kusk-system", logs))
 
 	// fmt.Println(testClient.GetLogs("kusk-gateway-envoy-fleet", "kusk-system"))
 }
