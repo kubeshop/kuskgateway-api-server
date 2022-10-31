@@ -348,14 +348,20 @@ func (k *kuskClient) TailLogs(name, namespace string, logs chan []byte) (string,
 		return "", err
 	}
 
-	pods, _ := clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{
+	pods, err := clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{
 		LabelSelector: fmt.Sprintf("app.kubernetes.io/instance=%s", name),
 	})
+	if err != nil {
+		return "", err
+	}
 
 	var pod corev1.Pod
 	if len(pods.Items) == 1 {
 		pod = pods.Items[0]
+	} else if len(pods.Items) == 0 {
+		return "", fmt.Errorf("no pods matching the criteria found")
 	}
+	
 	count := int64(1000)
 	// go func() {
 	defer close(logs)
