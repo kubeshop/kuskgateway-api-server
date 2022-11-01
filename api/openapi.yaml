@@ -425,6 +425,36 @@ paths:
                 type: object
         404:
           description: "Envoy fleet CRD not found"
+  /fleets/{namespace}/{name}/logs:
+    x-kusk:
+      websocket: true
+    get:
+      tags:
+        - "fleets"
+      summary: "Get envoy fleet logs"
+      operationId: getEnvoyFleetLogs
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+            default: "default"
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Envoy fleet logs"
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: "Envoy fleet logs not found"
+
   /staticroutes:
     get:
       tags:
