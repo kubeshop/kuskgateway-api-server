@@ -1,7 +1,7 @@
 version: "3"
 services:
   kgwapi:
-    build: ./server
+    build: ./server/cmd/api-server
     environment:
       - KUBECONFIG=/kube/config
       - ANALYTICS_ENABLED=false
