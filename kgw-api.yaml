@@ -17,9 +17,15 @@ spec:
         app: kgwtest
     spec:
       containers:
-        - image: jasmingacic/kusk-gateway-api:latest
-          imagePullPolicy: Always
-          name: kuskgateway-api
+        - image: kubeshop/kusk-gateway-api:latest
+          imagePullPolicy: IfNotPresent
+          name: kusk-gateway-api
+        - image: kubeshop/kusk-gateway-api-websocket:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - --port=8081
+          name: kusk-gateway-api-websocket
+
       serviceAccountName: kusk-gateway-manager
 ---
 apiVersion: v1
@@ -32,7 +38,11 @@ metadata:
 spec:
   ports:
     - port: 8080
+      name: http
       targetPort: 8080
+    - port: 8081
+      name: websocket
+      targetPort: 8081
   type: LoadBalancer
   selector:
     app: kgwtest
