@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 	typedCoreV1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -24,6 +25,7 @@ type websocketHandler struct {
 const (
 	defaultNamespaceParam = "kusk-system"
 	defaultNameParam      = "kusk-gateway-envoy-fleet"
+	defaultTailLineCount  = "1000"
 )
 
 func (h websocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,36 @@ func (h websocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		name = defaultNameParam
 	}
 
+	tailLineCount := queryParams.Get("tailLineCount")
+	if tailLineCount == "" {
+		tailLineCount = defaultTailLineCount
+	}
+
+	tailLineCountInt, err := strconv.Atoi(tailLineCount)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("invalid tailLineCount: %w", err).Error()))
+		return
+	}
+
+	log.Println("client connected")
+	stream, err := GetServiceContainerLogStream(
+		r.Context(),
+		namespace,
+		name,
+		"envoy",
+		int64(tailLineCountInt),
+		h.coreV1,
+	)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	defer stream.Close()
+
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -47,17 +79,6 @@ func (h websocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer ws.Close()
-
-	log.Println("client connected")
-	stream, err := GetServiceContainerLogStream(
-		r.Context(),
-		namespace,
-		name,
-		"envoy",
-		h.coreV1,
-	)
-
-	defer stream.Close()
 
 	c := client{
 		conn:      ws,
