@@ -33,6 +33,7 @@ func NewClientSet() (*kubernetes.Clientset, error) {
 func GetServiceContainerLogStream(
 	ctx context.Context,
 	namespace, svcName, containerName string,
+	tailLineCount int64,
 	corev1Client typev1.CoreV1Interface,
 ) (io.ReadCloser, error) {
 	servicePods, err := getPodsForSvc(ctx, svcName, namespace, corev1Client)
@@ -50,10 +51,9 @@ func GetServiceContainerLogStream(
 		return nil, fmt.Errorf("failed to get container %s from pod %s: %w", containerName, pod.Name, err)
 	}
 
-	count := int64(1000)
 	podLogOptions := corev1.PodLogOptions{
 		Follow:    true,
-		TailLines: &count,
+		TailLines: &tailLineCount,
 		Container: container.Name,
 	}
 
