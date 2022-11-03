@@ -137,14 +137,20 @@ func getConfig() (*rest.Config, error) {
 
 	return config, err
 }
+
 func getClient() (client.Client, error) {
 	scheme := runtime.NewScheme()
-	kuskv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	if err := kuskv1.AddToScheme(scheme); err != nil {
+		return nil, fmt.Errorf("unable to add kusk scheme: %w", err)
+	}
+
+	if err := corev1.AddToScheme(scheme); err != nil {
+		return nil, fmt.Errorf("unable to add core scheme: %w", err)
+	}
 
 	config, err := getConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to get kubernetes config: %w", err)
 	}
 
 	return client.New(config, client.Options{Scheme: scheme})
