@@ -1,8 +1,10 @@
 .PHONY: all
 all: format test build
 
+.PHONY: build
 build:
-	docker build -t kusk-gateway-api server
+	docker buildx build -t kusk-gateway-api -f build/api-server/Dockerfile .
+	docker buildx build -t kusk-gateway-api-websocket -f build/websocket/Dockerfile .
 
 server-generate:
 	openapi-generator-cli generate -i api/openapi.yaml -g go-server -o server/ --additional-properties=featureCORS=true
