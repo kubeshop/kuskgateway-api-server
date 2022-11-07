@@ -425,8 +425,13 @@ paths:
                 type: object
         404:
           description: "Envoy fleet CRD not found"
-  /fleets/{namespace}/{name}/logs:
+  /logs:
     x-kusk:
+      upstream:
+        service:
+          name: kusk-gateway-api
+          namespace: kusk-system
+          port: 8081
       websocket: true
     get:
       tags:
