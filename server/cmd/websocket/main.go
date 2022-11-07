@@ -24,6 +24,10 @@ func main() {
 		coreV1: clientSet.CoreV1(),
 	}
 	mux.Handle("/logs", websocketHandler)
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
 	log.Println("starting server on :", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), mux))
 }
