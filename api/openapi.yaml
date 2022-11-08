@@ -443,16 +443,17 @@ paths:
       operationId: getEnvoyFleetLogs
       parameters:
         - name: namespace
-          in: path
+          in: query
           required: true
           schema:
             type: string
-            default: "default"
+            default: "kusk-system"
         - name: name
-          in: path
+          in: query
           required: true
           schema:
             type: string
+            default: "kusk-gateway-envoy-fleet"
       responses:
         200:
           description: "Envoy fleet logs"
