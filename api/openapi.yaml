@@ -432,6 +432,9 @@ paths:
           name: kusk-gateway-api
           namespace: kusk-system
           port: 8081
+        rewrite:
+          pattern: "^/api"
+          substitution: ""
       websocket: true
     get:
       tags:
