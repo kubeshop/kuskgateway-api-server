@@ -10,23 +10,14 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	maxMessageSize = 512
-)
-
 type client struct {
 	conn      *websocket.Conn
 	logStream io.ReadCloser
+
+	writeWait      time.Duration
+	pongWait       time.Duration
+	pingPeriod     time.Duration
+	maxMessageSize int64
 }
 
 func (c *client) readPump(ctx context.Context, stopCh chan struct{}) {
@@ -34,9 +25,9 @@ func (c *client) readPump(ctx context.Context, stopCh chan struct{}) {
 		c.conn.Close()
 		stopCh <- struct{}{}
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	c.conn.SetReadLimit(c.maxMessageSize)
+	c.conn.SetReadDeadline(time.Now().Add(c.pongWait))
+	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(c.pongWait)); return nil })
 	for {
 		select {
 		case <-ctx.Done():
@@ -54,7 +45,7 @@ func (c *client) readPump(ctx context.Context, stopCh chan struct{}) {
 }
 
 func (c *client) writePump(ctx context.Context, stopCh chan struct{}) {
-	ticker := time.NewTicker(pingPeriod)
+	ticker := time.NewTicker(c.pingPeriod)
 	defer func() {
 		ticker.Stop()
 		c.conn.Close()
@@ -68,12 +59,12 @@ func (c *client) writePump(ctx context.Context, stopCh chan struct{}) {
 		case <-stopCh:
 			return
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			c.conn.SetWriteDeadline(time.Now().Add(c.writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		default:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			c.conn.SetWriteDeadline(time.Now().Add(c.writeWait))
 			line, err := readLongLine(reader)
 			if err != nil {
 				log.Println("writePump: cannot read line", err)

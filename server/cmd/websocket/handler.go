@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 	typedCoreV1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -19,7 +20,11 @@ var upgrader = websocket.Upgrader{
 }
 
 type websocketHandler struct {
-	coreV1 typedCoreV1.CoreV1Interface
+	coreV1         typedCoreV1.CoreV1Interface
+	writeWait      time.Duration
+	pongWait       time.Duration
+	pingPeriod     time.Duration
+	maxMessageSize int
 }
 
 const (
@@ -64,6 +69,7 @@ func (h websocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
+		log.Printf("error getting log stream: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
