@@ -23,14 +23,14 @@ var (
 	port           int
 	writeWaitSecs  int
 	pongWaitSecs   int
-	maxMessageSize int
+	maxMessageSize int64
 )
 
 func init() {
 	flag.IntVar(&port, "port", 8080, "port to listen on")
 	flag.IntVar(&writeWaitSecs, "write-wait", defaultWriteWaitSecs, "time allowed to write a message to the peer")
 	flag.IntVar(&pongWaitSecs, "pong-wait", defaultPongWaitSecs, "time allowed to read the next pong message from the peer")
-	flag.IntVar(&maxMessageSize, "max-message-size", defaultMaxMessageSize, "maximum message size allowed from peer")
+	flag.Int64Var(&maxMessageSize, "max-message-size", defaultMaxMessageSize, "maximum message size allowed from peer")
 	flag.Parse()
 }
 

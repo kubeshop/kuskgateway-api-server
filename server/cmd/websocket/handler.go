@@ -24,7 +24,7 @@ type websocketHandler struct {
 	writeWait      time.Duration
 	pongWait       time.Duration
 	pingPeriod     time.Duration
-	maxMessageSize int
+	maxMessageSize int64
 }
 
 const (
@@ -87,8 +87,12 @@ func (h websocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer ws.Close()
 
 	c := client{
-		conn:      ws,
-		logStream: stream,
+		conn:           ws,
+		logStream:      stream,
+		writeWait:      h.writeWait,
+		pongWait:       h.pongWait,
+		pingPeriod:     h.pingPeriod,
+		maxMessageSize: h.maxMessageSize,
 	}
 
 	stopCh := make(chan struct{})
