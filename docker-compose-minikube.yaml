@@ -3,3 +3,6 @@ services:
   kgwapi:
     volumes:
       - $HOME/.minikube:$HOME/.minikube:ro
+  websocket:
+    volumes:
+      - $HOME/.minikube:$HOME/.minikube:ro

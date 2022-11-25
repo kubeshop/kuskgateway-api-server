@@ -1,11 +1,23 @@
 version: "3"
 services:
   kgwapi:
-    build: ./server
+    build:
+      context: .
+      dockerfile: ./build/api-server/Dockerfile
     environment:
       - KUBECONFIG=/kube/config
       - ANALYTICS_ENABLED=false
     volumes:
       - $HOME/.kube/config:/kube/config:ro
     ports:
-      - 8080:8080
+      - "8080:8080"
+  websocket:
+    build:
+      context: .
+      dockerfile: ./build/websocket/Dockerfile
+    environment:
+      - KUBECONFIG=/kube/config
+    volumes:
+      - $HOME/.kube/config:/kube/config:ro
+    ports:
+        - "8081:8080"
