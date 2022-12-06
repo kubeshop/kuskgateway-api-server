@@ -279,7 +279,6 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 		fmt.Println(err)
 	}
 
-	staticRoute.Spec.Paths = tmp.Spec.Paths
 	staticRoute.Spec.Hosts = tmp.Spec.Hosts
 
 	if err := k.client.Create(context.TODO(), staticRoute, &client.CreateOptions{}); err != nil {
@@ -310,7 +309,6 @@ func (k *kuskClient) UpdateStaticRoute(namespace, name, fleetName, fleetNamespac
 				Name:      fleetName,
 				Namespace: fleetNamespace,
 			},
-			Paths: tmp.Spec.Paths,
 			Hosts: tmp.Spec.Hosts,
 		}
 
