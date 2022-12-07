@@ -1,3 +1,5 @@
+FAKE ?= true
+
 .PHONY: all
 all: format test build
 
@@ -16,7 +18,7 @@ run-minikube:
 	docker-compose -f docker-compose.yaml -f docker-compose-minikube.yaml up --build --force-recreate
 
 test:
-	cd ./server && FAKE=true go test -v -count=1 ./...
+	cd ./server && FAKE=${FAKE} go test -v -count=1 ./...
 
 .PHONY: format
 format:
