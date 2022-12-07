@@ -126,29 +126,35 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 	}
 
 	if opts.Security != nil && opts.Security.Crunch42 != nil {
-		secret, _ := s.kuskClient.GetSecret(opts.Security.Crunch42.Token.Name, opts.Security.Crunch42.Token.Namespace)
-		crunchClient, _ := crunch.NewClient(string(secret.Data[crunch.Crunch42Token]), nil)
+		secret, err := s.kuskClient.GetSecret(opts.Security.Crunch42.Token.Name, opts.Security.Crunch42.Token.Namespace) // if we can't get 42crunch secret we just proceed
+		if err == nil {
+			crunchClient, err := crunch.NewClient(string(secret.Data[crunch.Crunch42Token]), nil) // if it errors out we just carry on
+			if err == nil {
+				crunchCollections, _, err := crunchClient.ListCollections() // if it errors out we just carry on
+				if err == nil {
+					var cid string
+					for _, col := range crunchCollections.List {
+						if col.Desc.Name == api.Name {
+							cid = col.Desc.ID
+							break
+						}
+					}
 
-		crunchCollections, _, _ := crunchClient.ListCollections() // if we can't get 42crunch ID there is no need to error out
+					apis, _, err := crunchClient.ListAPIs(cid) // if it errors out we just carry on
+					if err == nil {
+						var apiID string
+						for _, api := range apis.List {
+							if api.Name == api.Name {
+								apiID = api.ID
+								break
+							}
+						}
 
-		var cid string
-		for _, col := range crunchCollections.List {
-			if col.Desc.Name == api.Name {
-				cid = col.Desc.ID
-				break
+						apiItem.Crunch42URL = fmt.Sprintf("https://platform.42crunch.com/apis/%s/api-summary", apiID)
+					}
+				}
 			}
 		}
-		apis, _, _ := crunchClient.ListAPIs(cid)
-
-		var apiID string
-		for _, api := range apis.List {
-			if api.Name == api.Name {
-				apiID = api.ID
-				break
-			}
-		}
-		
-		apiItem.Crunch42URL = fmt.Sprintf("https://platform.42crunch.com/apis/%s/api-summary", apiID)
 	}
 
 	apiItem.Fleet = ApiItemFleet{
