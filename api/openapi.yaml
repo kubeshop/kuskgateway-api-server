@@ -690,7 +690,7 @@ components:
           $ref: "#/components/schemas/ApiItem_Service"
         version:
           type: string
-        crunch42URL:
+        crunch42url:
           type: string
     ServiceItem:
       type: object
