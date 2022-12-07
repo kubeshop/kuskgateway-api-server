@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
-	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -15,6 +13,9 @@ import (
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 )
 
 var ErrNotFound = errors.New("error not found")
@@ -276,11 +277,11 @@ func (k *kuskClient) CreateStaticRoute(namespace, name, fleetName, fleetNamespac
 
 	err := yaml.Unmarshal([]byte(specs), tmp)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Errorf("CreateStaticRoute - yaml.Unmarshal failed: specs=%v, %w", specs, err))
 	}
 
-	staticRoute.Spec.Paths = tmp.Spec.Paths
 	staticRoute.Spec.Hosts = tmp.Spec.Hosts
+	staticRoute.Spec.Upstream = tmp.Spec.Upstream
 
 	if err := k.client.Create(context.TODO(), staticRoute, &client.CreateOptions{}); err != nil {
 		return nil, err
@@ -297,7 +298,7 @@ func (k *kuskClient) UpdateStaticRoute(namespace, name, fleetName, fleetNamespac
 	tmp := &kuskv1.StaticRoute{}
 	err := yaml.Unmarshal([]byte(specs), tmp)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Errorf("UpdateStaticRoute - yaml.Unmarshal failed: specs=%v, %w", specs, err))
 	}
 
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
@@ -310,8 +311,8 @@ func (k *kuskClient) UpdateStaticRoute(namespace, name, fleetName, fleetNamespac
 				Name:      fleetName,
 				Namespace: fleetNamespace,
 			},
-			Paths: tmp.Spec.Paths,
-			Hosts: tmp.Spec.Hosts,
+			Hosts:    tmp.Spec.Hosts,
+			Upstream: tmp.Spec.Upstream,
 		}
 
 		return k.client.Update(context.TODO(), staticRoute, &client.UpdateOptions{})
