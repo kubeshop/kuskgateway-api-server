@@ -6,8 +6,8 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
-	github.com/kubeshop/kusk-gateway v1.3.12
-	github.com/stretchr/testify v1.8.0
+	github.com/kubeshop/kusk-gateway v1.5.1-0.20221207083051-c3507a110867
+	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.25.2
 	k8s.io/apimachinery v0.25.2
@@ -26,7 +26,7 @@ require (
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
-	github.com/getkin/kin-openapi v0.106.0 // indirect
+	github.com/getkin/kin-openapi v0.110.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

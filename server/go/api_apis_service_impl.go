@@ -11,11 +11,13 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
 	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/kubeshop/kusk-gateway/pkg/analytics"
+	crunch "github.com/kubeshop/kusk-gateway/pkg/crunch42"
 	"github.com/kubeshop/kusk-gateway/pkg/spec"
 	"gopkg.in/yaml.v3"
 
@@ -121,6 +123,32 @@ func (s *ApisApiService) convertAPICRDtoAPIModel(api *kuskv1.API) ApiItem {
 			Name:      opts.Upstream.Service.Name,
 			Namespace: opts.Upstream.Service.Namespace,
 		}
+	}
+
+	if opts.Security != nil && opts.Security.Crunch42 != nil {
+		secret, _ := s.kuskClient.GetSecret(opts.Security.Crunch42.Token.Name, opts.Security.Crunch42.Token.Namespace)
+		crunchClient, _ := crunch.NewClient(string(secret.Data[crunch.Crunch42Token]), nil)
+
+		crunchCollections, _, _ := crunchClient.ListCollections() // if we can't get 42crunch ID there is no need to error out
+
+		var cid string
+		for _, col := range crunchCollections.List {
+			if col.Desc.Name == api.Name {
+				cid = col.Desc.ID
+				break
+			}
+		}
+		apis, _, _ := crunchClient.ListAPIs(cid)
+
+		var apiID string
+		for _, api := range apis.List {
+			if api.Name == api.Name {
+				apiID = api.ID
+				break
+			}
+		}
+		
+		apiItem.Crunch42URL = fmt.Sprintf("https://platform.42crunch.com/apis/%s/api-summary", apiID)
 	}
 
 	apiItem.Fleet = ApiItemFleet{
