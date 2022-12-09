@@ -7,8 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
-	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,19 +15,23 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
+
+	"github.com/kubeshop/kusk-gateway/api/v1alpha1"
+	kuskv1 "github.com/kubeshop/kusk-gateway/api/v1alpha1"
 )
 
 var testClient Client
 
-func setup(tb testing.TB) {
-	if _, fakeIt := os.LookupEnv("FAKE"); fakeIt {
+func setup(t *testing.T) {
+	if fake, isFakeDefined := os.LookupEnv("FAKE"); isFakeDefined && (fake == "true" || fake == "TRUE" || fake == "1") {
 		testClient = NewClient(getFakeClient())
 		return
 	}
+
 	k8sclient, err := getClient()
 	if err != nil {
-		tb.Error(err)
-		tb.Fail()
+		t.Error(err)
+		t.Fail()
 		return
 	}
 
@@ -179,11 +181,19 @@ func TestCreateStaticRoute(t *testing.T) {
 
 	setup(t)
 
-	namespace := "static-route-2"
-	name := "default"
+	namespace := "default"
+	name := "static-route-example-1-top-level-upstream"
 	fleetNamespace := "default"
-	fleetName := "/static-route-2"
-	staticRoute, err := testClient.CreateStaticRoute(namespace, name, fleetNamespace, fleetName, "")
+	fleetName := "default"
+	specs := `
+spec:
+  upstream:
+    service:
+      name: static-route-example-1-top-level-upstream
+      namespace: default
+      port: 80
+`
+	staticRoute, err := testClient.CreateStaticRoute(namespace, name, fleetNamespace, fleetName, specs)
 
 	require.NoError(err)
 	require.NotNil(staticRoute)
